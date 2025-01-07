@@ -115,6 +115,7 @@ public class NodeList {
                     .add(new Category("noises", Material.GRAY_CONCRETE_POWDER)
                             .add(new BasicNoiseNode())
                     )
+                    .add(new AbsoluteNumberNode())
                     .add(new AddNumbersNode())
                     .add(new ClampNumberNode())
                     .add(new DivideNumbersNode())
