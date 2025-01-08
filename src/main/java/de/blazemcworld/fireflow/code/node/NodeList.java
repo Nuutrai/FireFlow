@@ -23,6 +23,7 @@ import de.blazemcworld.fireflow.code.node.impl.text.FormatToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.text.StringToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.variable.*;
 import de.blazemcworld.fireflow.code.node.impl.vector.*;
+import de.blazemcworld.fireflow.code.node.impl.world.ClearChunkNode;
 import de.blazemcworld.fireflow.code.node.impl.world.SetBlockNode;
 import de.blazemcworld.fireflow.code.node.impl.world.SetRegionNode;
 import de.blazemcworld.fireflow.util.Translations;
@@ -160,6 +161,7 @@ public class NodeList {
             )
             .add(new Category("function", Material.COMMAND_BLOCK).markFunctions())
             .add(new Category("world",Material.GRASS_BLOCK)
+                    .add(new ClearChunkNode())
                     .add(new SetBlockNode())
                     .add(new SetRegionNode())
             )

@@ -159,11 +159,11 @@ public class NodeIOWidget implements Widget {
     }
 
     private Component displayText() {
-        String str = isInput ? ((connections.isEmpty() ? "○ " : "⏺ ") + input.getName()) :
-            (output.getName() + (connections.isEmpty() ? " ○" : " ⏺"));
+        String str = isInput ? ((connections.isEmpty() ? "\u25CB " : "\u23FA ") + input.getName()) :
+            (output.getName() + (connections.isEmpty() ? " \u25CB" : " \u23FA"));
         
         if (isInput && input.inset != null) {
-            str = "⏹ " + input.inset;
+            str = "\u23F9 " + input.inset;
         }
 
         return Component.text(str).color(type.color);

@@ -10,6 +10,7 @@ import de.blazemcworld.fireflow.code.widget.NodeWidget;
 import de.blazemcworld.fireflow.code.widget.Widget;
 import de.blazemcworld.fireflow.space.Space;
 import de.blazemcworld.fireflow.util.Config;
+import jdk.jfr.EventType;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;

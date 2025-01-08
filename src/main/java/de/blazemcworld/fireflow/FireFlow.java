@@ -42,7 +42,7 @@ public class FireFlow {
         MinecraftServer server = MinecraftServer.init();
 
         MinecraftServer.setBrandName("FireFlow");
-        MojangAuth.init();
+//        MojangAuth.init();
 
         Translations.init();
         NodeList.init();

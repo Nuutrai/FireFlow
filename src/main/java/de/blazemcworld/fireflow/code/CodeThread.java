@@ -3,6 +3,7 @@ package de.blazemcworld.fireflow.code;
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionCallNode;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.event.Event;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.util.*;
