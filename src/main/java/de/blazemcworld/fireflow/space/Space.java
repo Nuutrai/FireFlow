@@ -28,7 +28,9 @@ import net.minestom.server.timer.TaskSchedule;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Space {
 
@@ -112,7 +114,18 @@ public class Space {
                 Transfer.move(player, Lobby.instance);
             }
         }
-        save();
+        if (reason.equals("clear_world")) {
+            for (Chunk c : List.copyOf(play.getChunks())) {
+                play.unloadChunk(c);
+            }
+            try {
+                deleteRecursively(Path.of("spaces/" + info.id + "/world"));
+            } catch (IOException e) {
+                FireFlow.LOGGER.error("Failed to delete spaces/" + info.id + "/world!", e);
+            }
+        } else {
+            save();
+        }
         evaluator = new CodeEvaluator(this);
     }
 
@@ -143,5 +156,18 @@ public class Space {
 
     public boolean isOwnerOrContributor(Player player) {
         return info.owner.equals(player.getUuid()) || info.contributors.contains(player.getUuid());
+    }
+
+    private static void deleteRecursively(Path path) throws IOException {
+        if (!Files.exists(path)) return;
+        if (Files.isDirectory(path)) {
+            try (Stream<Path> paths = Files.list(path)) {
+                Iterator<Path> iterator = paths.iterator();
+                while (iterator.hasNext()) {
+                    deleteRecursively(iterator.next());
+                }
+            }
+        }
+        Files.delete(path);
     }
 }

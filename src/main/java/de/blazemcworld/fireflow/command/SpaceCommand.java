@@ -20,6 +20,7 @@ public class SpaceCommand extends Command {
         addSubcommand(new MonitorCommand());
         addSubcommand(new ContributorCommand());
         addSubcommand(new VariablesCommand());
+        addSubcommand(new ClearCommand());
         
         addSyntax((sender, ctx) -> {
             if (!(sender instanceof Player player)) {
