@@ -6,23 +6,23 @@ import net.minestom.server.event.Event;
 import net.minestom.server.event.trait.CancellableEvent;
 import net.minestom.server.item.Material;
 
-public class CancelEventNode extends Node {
+public class UnCancelEventNode extends Node {
 
-    public CancelEventNode() {
-        super("cancel_event", Material.BARRIER);
+    public UnCancelEventNode() {
+        super("uncancel_event", Material.BARRIER);
 
         Input<Void> signal = new Input<>("signal", SignalType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
             Event event = ctx.event;
             if (event instanceof CancellableEvent e)
-                e.setCancelled(true);
+                e.setCancelled(false);
             ctx.sendSignal(next);
         });
     }
 
     @Override
     public Node copy() {
-        return new CancelEventNode();
+        return new UnCancelEventNode();
     }
 }
