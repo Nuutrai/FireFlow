@@ -11,12 +11,15 @@ import de.blazemcworld.fireflow.code.widget.Widget;
 import de.blazemcworld.fireflow.space.Space;
 import de.blazemcworld.fireflow.util.Config;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
 import net.minestom.server.timer.TaskSchedule;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 public class CodeEvaluator {
 
@@ -29,6 +32,7 @@ public class CodeEvaluator {
     private final List<Long> cpuHistory = new LinkedList<>();
     public final VariableStore sessionVariables = new VariableStore();
     public final Set<Node> nodes;
+    private Event event;
 
     public CodeEvaluator(Space space) {
         this.space = space;
@@ -63,6 +67,17 @@ public class CodeEvaluator {
     public void stop() {
         space.play.eventNode().removeChild(events);
         stopped = true;
+    }
+
+    public <E extends InstanceEvent> void addListener(@NotNull Class<E> eventType, @NotNull Consumer<@NotNull E> listener) {
+        this.events.addListener(eventType, event -> {
+            this.event = event;
+            listener.accept(event);
+        });
+    }
+
+    public Event getEvent() {
+        return event;
     }
 
     public boolean isStopped() {

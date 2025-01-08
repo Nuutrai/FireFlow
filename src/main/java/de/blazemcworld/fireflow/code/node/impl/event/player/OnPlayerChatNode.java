@@ -24,11 +24,13 @@ public class OnPlayerChatNode extends Node {
         message = new Output<>("message", StringType.INSTANCE);
         player.valueFromThread();
         message.valueFromThread();
+
     }
 
     @Override
     public void init(CodeEvaluator evaluator) {
-        evaluator.events.addListener(PlayerChatEvent.class, event -> {
+        evaluator.addListener(PlayerChatEvent.class, event -> {
+
             CodeThread thread = evaluator.newCodeThread();
             thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
             thread.setThreadValue(message, event.getRawMessage());
