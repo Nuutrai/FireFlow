@@ -23,6 +23,11 @@ public class CodeThread {
         this.evaluator = evaluator;
     }
 
+    public CodeThread(CodeEvaluator evaluator, Event event) {
+        this.evaluator = evaluator;
+        this.event = event;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T getThreadValue(Node.Output<T> out) {
         Object v = threadValues.get(out);
@@ -69,7 +74,7 @@ public class CodeThread {
     }
 
     public CodeThread subThread() {
-        CodeThread thread = new CodeThread(evaluator);
+        CodeThread thread = new CodeThread(evaluator, event);
         thread.threadValues.putAll(threadValues);
         return thread;
     }

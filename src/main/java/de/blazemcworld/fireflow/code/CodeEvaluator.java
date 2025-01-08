@@ -11,6 +11,7 @@ import de.blazemcworld.fireflow.code.widget.Widget;
 import de.blazemcworld.fireflow.space.Space;
 import de.blazemcworld.fireflow.util.Config;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
@@ -152,6 +153,10 @@ public class CodeEvaluator {
 
     public CodeThread newCodeThread() {
         return new CodeThread(this);
+    }
+
+    public CodeThread newCodeThread(Event event) {
+        return new CodeThread(this, event);
     }
 
     public boolean timelimitHit(long elapsed) {
