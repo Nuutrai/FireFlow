@@ -15,8 +15,9 @@ public class UnCancelEventNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
             Event event = ctx.event;
-            if (event instanceof CancellableEvent e)
+            if (event instanceof CancellableEvent e) {
                 e.setCancelled(false);
+            }
             ctx.sendSignal(next);
         });
     }
