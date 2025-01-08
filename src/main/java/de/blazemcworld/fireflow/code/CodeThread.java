@@ -16,7 +16,7 @@ public class CodeThread {
     private long lastSync = System.nanoTime();
     public final VariableStore threadVariables = new VariableStore();
     public final Stack<FunctionCallNode> functionStack = new Stack<>();
-    public Event event;
+    public Event event = null;
     private boolean paused = false;
 
     public CodeThread(CodeEvaluator evaluator) {
