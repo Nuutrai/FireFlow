@@ -38,7 +38,7 @@ public class ListForEachNode<T> extends Node {
                     ctx.sendSignal(next);
                     return;
                 }
-                ctx.setThreadValue(value, listValue.get(index[0]--));
+                ctx.setThreadValue(value, listValue.get(index[0]++));
                 ctx.submit(step[0]);
                 ctx.sendSignal(each);
             };
