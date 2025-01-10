@@ -6,6 +6,7 @@ import de.blazemcworld.fireflow.code.node.impl.action.player.*;
 import de.blazemcworld.fireflow.code.node.impl.event.player.*;
 import de.blazemcworld.fireflow.code.node.impl.event.space.OnChunkLoadNode;
 import de.blazemcworld.fireflow.code.node.impl.flow.*;
+import de.blazemcworld.fireflow.code.node.impl.info.GetBlockNode;
 import de.blazemcworld.fireflow.code.node.impl.info.RemainingCpuNode;
 import de.blazemcworld.fireflow.code.node.impl.info.player.*;
 import de.blazemcworld.fireflow.code.node.impl.item.CreateItemNode;
@@ -47,6 +48,7 @@ public class NodeList {
                         .add(new KillPlayerNode())
                         .add(new RespawnPlayerNode())
                         .add(new SendMessageNode())
+                        .add(new SendParticleNode())
                         .add(new SendTitleNode())
                         .add(new SetAllowFlyingNode())
                         .add(new SetExperienceLevelNode())
@@ -94,6 +96,7 @@ public class NodeList {
                     .add(new SetItemCountNode())
             )
             .add(new Category("info", Material.ENDER_EYE)
+                    .add(new GetBlockNode())
                     .add(new GetExperienceLevelNode())
                     .add(new GetExperiencePercentageNode())
                     .add(new GetPlayerFoodNode())
@@ -105,6 +108,7 @@ public class NodeList {
                     .add(new IsPlayingNode())
                     .add(new PlayerCanFlyNode())
                     .add(new PlayerIsFlyingNode())
+                    .add(new PlayerListNode())
                     .add(new PlayerMainItemNode())
                     .add(new RemainingCpuNode())
             )

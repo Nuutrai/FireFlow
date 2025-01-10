@@ -17,6 +17,7 @@ public class AllTypes {
         all.add(ItemType.INSTANCE);
         all.add(ListType.UNSPECIFIED);
         all.add(NumberType.INSTANCE);
+        all.add(ParticleType.INSTANCE);
         all.add(PlayerType.INSTANCE);
         all.add(PositionType.INSTANCE);
         all.add(SignalType.INSTANCE);
