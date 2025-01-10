@@ -1,4 +1,4 @@
-package de.blazemcworld.fireflow.code.node.impl.flow;
+package de.blazemcworld.fireflow.code.node.impl.condition;
 
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.ConditionType;

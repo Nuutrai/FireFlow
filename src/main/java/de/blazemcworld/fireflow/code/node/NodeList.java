@@ -3,6 +3,10 @@ package de.blazemcworld.fireflow.code.node;
 import de.blazemcworld.fireflow.FireFlow;
 import de.blazemcworld.fireflow.code.node.impl.action.CancelEventNode;
 import de.blazemcworld.fireflow.code.node.impl.action.player.*;
+import de.blazemcworld.fireflow.code.node.impl.condition.ConditionAndNode;
+import de.blazemcworld.fireflow.code.node.impl.condition.ConditionOrNode;
+import de.blazemcworld.fireflow.code.node.impl.condition.ConditionalChoiceNode;
+import de.blazemcworld.fireflow.code.node.impl.condition.InvertConditionNode;
 import de.blazemcworld.fireflow.code.node.impl.event.player.*;
 import de.blazemcworld.fireflow.code.node.impl.event.space.OnChunkLoadNode;
 import de.blazemcworld.fireflow.code.node.impl.flow.*;
@@ -66,6 +70,12 @@ public class NodeList {
                     )
                     .add(new CancelEventNode())
             )
+            .add(new Category("condition", Material.COMPARATOR)
+                    .add(new ConditionAndNode())
+                    .add(new ConditionalChoiceNode<>(null))
+                    .add(new ConditionOrNode())
+                    .add(new InvertConditionNode())
+            )
             .add(new Category("event", Material.OBSERVER)
                     .add(new OnChunkLoadNode())
                     .add(new OnPlayerChatNode())
@@ -80,10 +90,8 @@ public class NodeList {
                     .add(new OnPlayerStopSprintingNode())
                     .add(new OnPlayerUseItemNode())
             )
-            .add(new Category("flow", Material.COMPARATOR)
-                    .add(new ConditionalChoiceNode<>(null))
+            .add(new Category("flow", Material.REPEATER)
                     .add(new IfNode())
-                    .add(new InvertConditionNode())
                     .add(new ListForEachNode<>(null))
                     .add(new PauseThreadNode())
                     .add(new RepeatNode())
