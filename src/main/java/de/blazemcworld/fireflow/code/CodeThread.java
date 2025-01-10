@@ -3,6 +3,7 @@ package de.blazemcworld.fireflow.code;
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionCallNode;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.event.Event;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.util.*;
@@ -15,10 +16,16 @@ public class CodeThread {
     private long lastSync = System.nanoTime();
     public final VariableStore threadVariables = new VariableStore();
     public final Stack<FunctionCallNode> functionStack = new Stack<>();
+    public Event event = null;
     private boolean paused = false;
 
     public CodeThread(CodeEvaluator evaluator) {
         this.evaluator = evaluator;
+    }
+
+    public CodeThread(CodeEvaluator evaluator, Event event) {
+        this.evaluator = evaluator;
+        this.event = event;
     }
 
     @SuppressWarnings("unchecked")
@@ -67,7 +74,7 @@ public class CodeThread {
     }
 
     public CodeThread subThread() {
-        CodeThread thread = new CodeThread(evaluator);
+        CodeThread thread = new CodeThread(evaluator, event);
         thread.threadValues.putAll(threadValues);
         return thread;
     }
