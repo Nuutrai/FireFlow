@@ -17,10 +17,7 @@ import de.blazemcworld.fireflow.code.widget.WireWidget;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.item.Material;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 public class CodeJSON {
@@ -231,6 +228,11 @@ public class CodeJSON {
                 }
             }
 
+            if (node == null) {
+                out.add(null);
+                continue;
+            }
+
             if (nodeObj.has("varargs")) {
                 JsonObject varargsObj = nodeObj.getAsJsonObject("varargs");
                 for (Map.Entry<String, JsonElement> entry : varargsObj.entrySet()) {
@@ -278,6 +280,7 @@ public class CodeJSON {
                         int outputId = Integer.parseInt(entry.getValue().getAsString().split(":")[1]);
 
                         NodeWidget other = out.get(nodeIndex);
+                        if (other == null) continue;
                         for (Node.Input<?> input : nodeWidget.node.inputs) {
                             if (input.id.equals(inputId)) {
                                 ((Node.Input<Object>) input).connect((Node.Output<Object>) other.node.outputs.get(outputId));
@@ -294,6 +297,7 @@ public class CodeJSON {
                         int inputId = Integer.parseInt(entry.getValue().getAsString().split(":")[1]);
 
                         NodeWidget other = out.get(nodeIndex);
+                        if (other == null) continue;
                         for (Node.Output<?> output : nodeWidget.node.outputs) {
                             if (output.id.equals(outputId)) {
                                 ((Node.Output<Object>) output).connected = (Node.Input<Object>) other.node.inputs.get(inputId);
@@ -314,7 +318,7 @@ public class CodeJSON {
         return out;
     }
 
-    public static List<WireWidget> wireFromJson(JsonArray wires, Function<Integer, NodeWidget> id2Node, Function<Vec, Vec> transformPos, CodeEditor editor) {
+    public static List<WireWidget> wireFromJson(JsonArray wires, Function<Integer, NodeWidget> id2Node, Function<Vec, Vec> transformPos) {
         List<WireWidget> wireWidgets = new ArrayList<>();
         List<Runnable> todo = new ArrayList<>();
 
@@ -327,11 +331,16 @@ public class CodeJSON {
             double toY = wireObj.get("toY").getAsDouble();
 
             WireType<?> typeInst = AllTypes.fromJson(type);
-            WireWidget wire = new WireWidget(typeInst, transformPos.apply(new Vec(fromX, fromY, 15.999)), transformPos.apply(new Vec(toX, toY, 15.999)), editor.space.code);
+            WireWidget wire = new WireWidget(typeInst, transformPos.apply(new Vec(fromX, fromY, 15.999)), transformPos.apply(new Vec(toX, toY, 15.999)));
             if (wireObj.has("previousOutputNode") && wireObj.has("previousOutputId")) {
                 int nodeIndex = wireObj.get("previousOutputNode").getAsInt();
                 String outputId = wireObj.get("previousOutputId").getAsString();
-                for (NodeIOWidget io : id2Node.apply(nodeIndex).getIOWidgets()) {
+                NodeWidget node = id2Node.apply(nodeIndex);
+                if (node == null) {
+                    wireWidgets.add(null);
+                    continue;
+                }
+                for (NodeIOWidget io : node.getIOWidgets()) {
                     if (!io.isInput() && io.output.id.equals(outputId)) {
                         wire.setPreviousOutput(io);
                         io.connections.add(wire);
@@ -343,7 +352,12 @@ public class CodeJSON {
             if (wireObj.has("nextInputId") && wireObj.has("nextInputNode")) {
                 int nodeIndex = wireObj.get("nextInputNode").getAsInt();
                 String inputId = wireObj.get("nextInputId").getAsString();
-                for (NodeIOWidget io : id2Node.apply(nodeIndex).getIOWidgets()) {
+                NodeWidget node = id2Node.apply(nodeIndex);
+                if (node == null) {
+                    wireWidgets.add(null);
+                    continue;
+                }
+                for (NodeIOWidget io : node.getIOWidgets()) {
                     if (io.isInput() && io.input.id.equals(inputId)) {
                         wire.setNextInput(io);
                         io.connections.add(wire);
@@ -356,12 +370,14 @@ public class CodeJSON {
                 if (wireObj.has("previousWires")) {
                     for (JsonElement previousWireElem : wireObj.getAsJsonArray("previousWires")) {
                         int index = previousWireElem.getAsInt();
+                        if (wireWidgets.get(index) == null) continue;
                         wire.previousWires.add(wireWidgets.get(index));
                     }
                 }
                 if (wireObj.has("nextWires")) {
                     for (JsonElement nextWireElem : wireObj.getAsJsonArray("nextWires")) {
                         int index = nextWireElem.getAsInt();
+                        if (wireWidgets.get(index) == null) continue;
                         wire.nextWires.add(wireWidgets.get(index));
                     }
                 }
@@ -371,7 +387,48 @@ public class CodeJSON {
         }
 
         for (Runnable item : todo) item.run();
+        for (WireWidget w : wireWidgets) {
+            if (w == null) continue;
+            if (w.previousOutput == null && w.previousWires.isEmpty()) {
+                removeInvalid(w, wireWidgets);
+                continue;
+            }
+            if (w.nextInput == null && w.nextWires.isEmpty()) {
+                removeInvalid(w, wireWidgets);
+                continue;
+            }
+        }
         return wireWidgets;
+    }
+
+    private static void removeInvalid(WireWidget w, List<WireWidget> all) {
+        int index = all.indexOf(w);
+        if (index >= 0) {
+            all.set(index, null);
+        }
+
+        for (WireWidget other : w.previousWires) {
+            other.nextWires.remove(w);
+            if (other.previousOutput == null && other.previousWires.isEmpty()) {
+                removeInvalid(other, all);
+                continue;
+            }
+            if (other.nextInput == null && other.nextWires.isEmpty()) {
+                removeInvalid(other, all);
+                continue;
+            }
+        }
+        for (WireWidget other : w.nextWires) {
+            other.previousWires.remove(w);
+            if (other.previousOutput == null && other.previousWires.isEmpty()) {
+                removeInvalid(other, all);
+                continue;
+            }
+            if (other.nextInput == null && other.nextWires.isEmpty()) {
+                removeInvalid(other, all);
+                continue;
+            }
+        }
     }
 
     public static List<FunctionDefinition> fnFromJson(JsonArray json) {

@@ -15,12 +15,12 @@ import java.util.WeakHashMap;
 public class ListType<T> extends WireType<ListValue<T>> {
 
     public static final ListType<?> UNSPECIFIED = new ListType<>(null);
-    private final WireType<T> type;
+    public final WireType<T> elementType;
     private static final WeakHashMap<WireType<?>, ListType<?>> instances = new WeakHashMap<>();
 
     private ListType(WireType<T> type) {
         super("list", computeColor(type), Material.BOOKSHELF);
-        this.type = type;
+        this.elementType = type;
     }
 
     @SuppressWarnings("unchecked")
@@ -30,7 +30,7 @@ public class ListType<T> extends WireType<ListValue<T>> {
 
     @Override
     public ListValue<T> defaultValue() {
-        return new ListValue<>(type);
+        return new ListValue<>(elementType);
     }
 
     private static TextColor computeColor(WireType<?> type) {
@@ -44,8 +44,8 @@ public class ListType<T> extends WireType<ListValue<T>> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public ListValue<T> convert(Object obj) {
-        if (obj instanceof ListValue<?> list && list.type == type) return (ListValue<T>) list;
+    public ListValue<T> checkType(Object obj) {
+        if (obj instanceof ListValue<?> list && list.type == elementType) return (ListValue<T>) list;
         return null;
     }
     
@@ -56,7 +56,7 @@ public class ListType<T> extends WireType<ListValue<T>> {
 
     @Override
     public List<WireType<?>> getTypes() {
-        return List.of(type);
+        return List.of(elementType);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class ListType<T> extends WireType<ListValue<T>> {
 
     @Override
     public String getName() {
-        if (type == null) return Translations.get("type.list");
-        return Translations.get("type.typed_list", type.getName());
+        if (elementType == null) return Translations.get("type.list");
+        return Translations.get("type.typed_list", elementType.getName());
     }
 
     @Override
@@ -84,7 +84,7 @@ public class ListType<T> extends WireType<ListValue<T>> {
     public JsonElement toJson(ListValue<T> obj) {
         JsonArray array = new JsonArray();
         for (int i = 0; i < obj.size(); i++) {
-            array.add(type.toJson(obj.get(i)));
+            array.add(elementType.toJson(obj.get(i)));
         }
         return array;
     }
@@ -93,9 +93,9 @@ public class ListType<T> extends WireType<ListValue<T>> {
     public ListValue<T> fromJson(JsonElement json) {
         List<T> values = new ArrayList<>();
         for (JsonElement elem : json.getAsJsonArray()) {
-            values.add(type.fromJson(elem));
+            values.add(elementType.fromJson(elem));
         }
-        return new ListValue<>(type, values);
+        return new ListValue<>(elementType, values);
     }
 
 }

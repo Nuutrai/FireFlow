@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.item.Material;
 
 public class PositionType extends WireType<Pos> {
@@ -20,7 +21,7 @@ public class PositionType extends WireType<Pos> {
     }
 
     @Override
-    public Pos convert(Object obj) {
+    public Pos checkType(Object obj) {
         if (obj instanceof Pos p) return p;
         return null;
     }
@@ -57,5 +58,18 @@ public class PositionType extends WireType<Pos> {
                 value.pitch(),
                 value.yaw()
         );
+    }
+
+    @Override
+    public boolean canConvert(WireType<?> other) {
+        return other == VectorType.INSTANCE;
+    }
+
+    @Override
+    public Pos convert(WireType<?> other, Object v) {
+        if (other == VectorType.INSTANCE && v instanceof Vec vec) {
+            return vec.asPosition();
+        }
+        return super.convert(other, v);
     }
 }

@@ -3,6 +3,7 @@ package de.blazemcworld.fireflow.code.type;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.item.Material;
 
@@ -20,7 +21,7 @@ public class VectorType extends WireType<Vec> {
     }
 
     @Override
-    public Vec convert(Object obj) {
+    public Vec checkType(Object obj) {
         if (obj instanceof Vec p) return p;
         return null;
     }
@@ -51,5 +52,18 @@ public class VectorType extends WireType<Vec> {
                 value.y(),
                 value.z()
         );
+    }
+
+    @Override
+    public boolean canConvert(WireType<?> other) {
+        return other == PositionType.INSTANCE;
+    }
+
+    @Override
+    public Vec convert(WireType<?> other, Object v) {
+        if (other == PositionType.INSTANCE && v instanceof Pos pos) {
+            return pos.asVec();
+        }
+        return super.convert(other, v);
     }
 }

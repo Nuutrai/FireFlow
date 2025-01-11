@@ -20,7 +20,7 @@ public class SignalType extends WireType<Void> {
     }
 
     @Override
-    public Void convert(Object obj) {
+    public Void checkType(Object obj) {
         return null;
     }
 

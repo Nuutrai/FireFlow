@@ -32,7 +32,7 @@ public class WireAction implements Action {
         if (!io.isInput()) {
             output = io;
             startPos = io.getPos().sub(output.getSize().sub(-1 / 4f, 1 / 8f, 0));
-            startWire = new WireWidget(io.getPos().sub(output.getSize().sub(1 / 8f, 1 / 8f, 0)), output.type(), startPos, editor.space.code);
+            startWire = new WireWidget(io.getPos().sub(output.getSize().sub(1 / 8f, 1 / 8f, 0)), output.type(), startPos);
             editor.lockWidget(io.parent, player);
         }
 //        else {
@@ -56,15 +56,15 @@ public class WireAction implements Action {
         WireType<?> type = (output != null) ? output.type() : inputWire.type();
         for (Widget widget : new HashSet<>(editor.rootWidgets)) {
             if (widget.getWidget(cursor) instanceof NodeIOWidget nodeIOWidget) {
-                if (nodeIOWidget.type() != type) continue;
                 if (!nodeIOWidget.isInput()) continue;
+                if (!nodeIOWidget.input.canUnderstand(type)) continue;
                 endPos = nodeIOWidget.getPos().sub(-1 / 4f, 1 / 8f, 0);
                 hover = nodeIOWidget;
                 break;
             }
         }
         if (wires.isEmpty()) {
-            WireWidget lastWire = new WireWidget(startPos, type, startPos, editor.space.code);
+            WireWidget lastWire = new WireWidget(startPos, type, startPos);
             lastWire.update(editor.space.code);
             wires.add(lastWire);
         }
@@ -74,7 +74,7 @@ public class WireAction implements Action {
             else wires.getFirst().line.to = wires.getFirst().line.to.withX(endPos.x());
             positions = editor.pathfinder.findPath(wires.getFirst().line.to, endPos, 5, 256);
             if (wires.size() == 1) {
-                WireWidget lastWire = new WireWidget(wires.getFirst(), type, startPos, editor.space.code);
+                WireWidget lastWire = new WireWidget(wires.getFirst(), type, startPos);
                 lastWire.update(editor.space.code);
                 wires.add(lastWire);
             }
@@ -85,7 +85,7 @@ public class WireAction implements Action {
         for (Vec position : positions) {
             WireWidget lastWire = wires.get(index);
             if (index == wires.size() - 1) {
-                WireWidget wire = new WireWidget(lastWire, type, position, editor.space.code);
+                WireWidget wire = new WireWidget(lastWire, type, position);
                 wire.update(editor.space.code);
                 wires.add(wire);
             } else {
@@ -103,7 +103,7 @@ public class WireAction implements Action {
 
         if (hover != null) {
             WireWidget lastWire = wires.get(index);
-            if (endWire == null) endWire = new WireWidget(lastWire, hover.type(), hover.getPos(), editor.space.code);
+            if (endWire == null) endWire = new WireWidget(lastWire, type, hover.getPos());
             endWire.line.from = lastWire.line.to;
             endWire.line.to = (hover.isInput()) ? hover.getPos().sub(1 / 8f, 1 / 8f, 0) : hover.getPos().sub(hover.getSize().sub(1 / 8f, 1 / 8f, 0));
             endWire.update(editor.space.code);
@@ -120,8 +120,8 @@ public class WireAction implements Action {
                 if (widget.getWidget(i.pos()) instanceof NodeIOWidget nodeIOWidget) {
                     WireType<?> type = (output != null) ? output.type() : inputWire.type();
                     if (endWire == null) return;
-                    if (nodeIOWidget.type() != type) return;
                     if (!nodeIOWidget.isInput()) return;
+                    if (!nodeIOWidget.input.canUnderstand(type)) return;
                     if (!nodeIOWidget.connections.isEmpty() && type != SignalType.INSTANCE) return;
                     if (i.editor().isLocked(widget) != null && !i.editor().isLockedByPlayer(widget, i.player())) {
                         i.player().sendMessage(Component.text(Translations.get("error.locked", i.editor().isLocked(widget).getUsername())).color(NamedTextColor.RED));

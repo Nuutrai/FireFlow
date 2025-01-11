@@ -1,11 +1,14 @@
 package de.blazemcworld.fireflow.code.node;
 
+import de.blazemcworld.fireflow.FireFlow;
 import de.blazemcworld.fireflow.code.CodeEvaluator;
 import de.blazemcworld.fireflow.code.CodeThread;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionCallNode;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionInputsNode;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionOutputsNode;
+import de.blazemcworld.fireflow.code.type.ListType;
 import de.blazemcworld.fireflow.code.type.WireType;
+import de.blazemcworld.fireflow.code.value.ListValue;
 import de.blazemcworld.fireflow.util.Translations;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -100,7 +103,7 @@ public abstract class Node {
         public final String id;
         public final WireType<T> type;
         public String inset;
-        public Output<T> connected;
+        public Output<?> connected;
         public Varargs<T> varargsParent;
         private Consumer<CodeThread> logic;
         public List<String> options;
@@ -111,8 +114,13 @@ public abstract class Node {
             inputs.add(this);
         }
 
+        @SuppressWarnings("unchecked")
         public T getValue(CodeThread ctx) {
-            if (connected != null) return connected.computeNow(ctx);
+            if (connected != null) {
+                Object out = connected.computeNow(ctx);
+                if (connected.type == type) return (T) out;
+                return type.convert(connected.type, out);
+            }
             if (inset != null) return type.parseInset(inset);
             return type.defaultValue();
         }
@@ -150,10 +158,25 @@ public abstract class Node {
         }
 
         public void connect(Output<T> output) {
-            connected = output;
+            if (output == null) {
+                connected = null;
+            } else if (canUnderstand(output.type)) {
+                connected = output;
+            } else {
+                FireFlow.LOGGER.warn("Called input.connect() with invalid wire type!");
+            }
             inset = null;
             if (varargsParent != null) varargsParent.update();
             if (connected == null && options != null) inset = options.getFirst();
+        }
+
+        public boolean canUnderstand(WireType<?> other) {
+            if (other == type || type.canConvert(other)) return true;
+
+            if (varargsParent != null && other instanceof ListType<?> l) {
+                return l.elementType == type || type.canConvert(l.elementType);
+            }
+            return false;
         }
     }
 
@@ -209,10 +232,22 @@ public abstract class Node {
             addInput(UUID.randomUUID().toString());
         }
 
+        @SuppressWarnings("unchecked")
         public List<T> getVarargs(CodeThread ctx) {
             List<T> list = new ArrayList<>();
             for (Input<T> input : children) {
                 if (input.inset == null && input.connected == null) continue;
+                if (input.connected != null && input.type != input.connected.type && input.connected.type instanceof ListType<?> l && input.type.canConvert(l.elementType)) {
+                    ListValue<?> spread = (ListValue<?>) input.connected.computeNow(ctx);
+                    for (int i = 0; i < spread.size(); i++) {
+                        if (spread.type == input.type) {
+                            list.add((T) spread.get(i));
+                        } else {
+                            list.add(input.type.convert(spread.type, spread.get(i)));
+                        }
+                    }
+                    continue;
+                }
                 list.add(input.getValue(ctx));
             }
             return list;

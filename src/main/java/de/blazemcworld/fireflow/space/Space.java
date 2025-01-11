@@ -44,6 +44,7 @@ public class Space {
     private long emptySince = -1;
     private boolean loaded = true;
     public final VariableStore savedVariables = new VariableStore();
+    public boolean potentiallyBroken = false;
 
     public Space(SpaceInfo info) {
         this.info = info;
@@ -77,9 +78,11 @@ public class Space {
 
         play.eventNode().addListener(PlayerSpawnEvent.class, event -> {
             emptySince = -1;
+            if (potentiallyBroken) event.getPlayer().sendMessage(Component.text(Translations.get("error.space.potentially_broken")).color(NamedTextColor.RED));
         });
         code.eventNode().addListener(PlayerSpawnEvent.class, event -> {
             emptySince = -1;
+            if (potentiallyBroken) event.getPlayer().sendMessage(Component.text(Translations.get("error.space.potentially_broken")).color(NamedTextColor.RED));
         });
         
         MinecraftServer.getSchedulerManager().scheduleTask(() -> {
@@ -130,6 +133,15 @@ public class Space {
     }
 
     public void save() {
+        if (potentiallyBroken) {
+            for (Chunk c : List.copyOf(play.getChunks())) {
+                if (c.getViewers().isEmpty()) {
+                    play.unloadChunk(c);
+                }
+            }
+            return;
+        }
+
         play.saveChunksToStorage().thenAccept((v) -> {
             for (Chunk c : List.copyOf(play.getChunks())) {
                 if (c.getViewers().isEmpty()) {

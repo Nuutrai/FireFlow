@@ -23,7 +23,7 @@ public class ParticleType extends WireType<Particle> {
     }
 
     @Override
-    public Particle convert(Object obj) {
+    public Particle checkType(Object obj) {
         if (obj instanceof Particle p) return p;
         return null;
     }

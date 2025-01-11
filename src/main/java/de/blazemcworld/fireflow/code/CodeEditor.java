@@ -549,7 +549,13 @@ public class CodeEditor {
                 }
                 return null;
             }, this, v -> v.add(cursor));
-            List<WireWidget> wireWidgets = CodeJSON.wireFromJson(json.getAsJsonArray("wires"), nodeWidgets::get, v -> v.add(cursor), this);
+            List<WireWidget> wireWidgets = CodeJSON.wireFromJson(json.getAsJsonArray("wires"), nodeWidgets::get, v -> v.add(cursor));
+
+            if (nodeWidgets.contains(null) || wireWidgets.contains(null)) {
+                player.sendMessage(Component.text(Translations.get("error.snippet.partial")).color(NamedTextColor.RED));
+                nodeWidgets.removeIf(Objects::isNull);
+                wireWidgets.removeIf(Objects::isNull);
+            }
 
             rootWidgets.addAll(nodeWidgets);
             rootWidgets.addAll(wireWidgets);
@@ -668,8 +674,15 @@ public class CodeEditor {
             }
 
             List<NodeWidget> nodeWidgets = CodeJSON.nodeFromJson(data.getAsJsonArray("nodes"), functions::get, this, v -> v);
+            List<WireWidget> wireWidgets = CodeJSON.wireFromJson(data.getAsJsonArray("wires"), nodeWidgets::get, v -> v);
+
+            if (nodeWidgets.contains(null) || wireWidgets.contains(null)) {
+                space.potentiallyBroken = true;
+                nodeWidgets.removeIf(Objects::isNull);
+                wireWidgets.removeIf(Objects::isNull);
+            }
+
             rootWidgets.addAll(nodeWidgets);
-            List<WireWidget> wireWidgets = CodeJSON.wireFromJson(data.getAsJsonArray("wires"), nodeWidgets::get, v -> v, this);
             rootWidgets.addAll(wireWidgets);
 
             for (NodeWidget n : nodeWidgets) n.update(space.code);

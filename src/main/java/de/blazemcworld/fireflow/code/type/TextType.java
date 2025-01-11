@@ -48,7 +48,7 @@ public class TextType extends WireType<Component> {
     }
 
     @Override
-    public Component convert(Object obj) {
+    public Component checkType(Object obj) {
         if (obj instanceof Component comp) return comp;
         return null;
     }
@@ -61,5 +61,15 @@ public class TextType extends WireType<Component> {
     @Override
     public Component fromJson(JsonElement json) {
         return MM.deserialize(json.getAsString());
+    }
+
+    @Override
+    public boolean canConvert(WireType<?> other) {
+        return AllTypes.isValue(other);
+    }
+
+    @Override
+    public Component convert(WireType<?> other, Object v) {
+        return Component.text(other.stringify(v));
     }
 }

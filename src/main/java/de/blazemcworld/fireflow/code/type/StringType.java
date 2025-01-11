@@ -30,7 +30,7 @@ public class StringType extends WireType<String> {
     }
 
     @Override
-    public String convert(Object obj) {
+    public String checkType(Object obj) {
         if (obj instanceof String str) return str;
         return null;
     }
@@ -43,5 +43,15 @@ public class StringType extends WireType<String> {
     @Override
     public String fromJson(JsonElement json) {
         return json.getAsString();
+    }
+
+    @Override
+    public boolean canConvert(WireType<?> other) {
+        return AllTypes.isValue(other);
+    }
+
+    @Override
+    public String convert(WireType<?> other, Object v) {
+        return other.stringify(v);
     }
 }

@@ -93,15 +93,15 @@ public class WikiGenerator {
                 sb.append("- ");
                 if (input.type != null) sb.append(colorStart(input.type.color));
                 sb.append(input.getName());
-                if (input.type != null) {
-                    sb.append(" (").append(icon(input.type.icon)).append(input.type.getName()).append(")").append(colorEnd());
-                }
+                if (input.type != null) sb.append(": ").append(icon(input.type.icon)).append(input.type.getName());
                 if (input.options != null) {
                     sb.append("  \nOne of:\n");
                     for (String option : input.options) {
                         sb.append("  - ").append(option).append("\n");
                     }
                 }
+                if (input.varargsParent != null) sb.append(" (Varargs)");
+                if (input.type != null) sb.append(colorEnd());
                 sb.append("\n");
             }
             sb.append("\n");

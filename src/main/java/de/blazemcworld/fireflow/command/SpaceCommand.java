@@ -5,6 +5,7 @@ import de.blazemcworld.fireflow.space.SpaceManager;
 import de.blazemcworld.fireflow.util.Translations;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.command.CommandSender;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentLiteral;
 import net.minestom.server.command.builder.arguments.ArgumentStringArray;
@@ -23,20 +24,8 @@ public class SpaceCommand extends Command {
         addSubcommand(new ClearCommand());
         
         addSyntax((sender, ctx) -> {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.player")).color(NamedTextColor.RED));
-                return;
-            }
-            Space space = SpaceManager.getSpaceForPlayer(player);
-            if (space == null) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.space")).color(NamedTextColor.RED));
-                return;
-            }
-
-            if (!space.info.owner.equals(player.getUuid())) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.owner")).color(NamedTextColor.RED));
-                return;
-            }
+            Space space = getSpace(sender);
+            if (space == null) return;
             
             ItemStack item = ctx.get("item");
             if (item == null || item.isAir()) {
@@ -48,20 +37,8 @@ public class SpaceCommand extends Command {
             sender.sendMessage(Component.text(Translations.get("success.changed_icon")).color(NamedTextColor.GREEN));
         }, new ArgumentLiteral("icon"), new ArgumentItemStack("item"));
         addSyntax((sender, ctx) -> {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.player")).color(NamedTextColor.RED));
-                return;
-            }
-            Space space = SpaceManager.getSpaceForPlayer(player);
-            if (space == null) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.space")).color(NamedTextColor.RED));
-                return;
-            }
-
-            if (!space.info.owner.equals(player.getUuid())) {
-                sender.sendMessage(Component.text(Translations.get("error.needs.owner")).color(NamedTextColor.RED));
-                return;
-            }
+            Space space = getSpace(sender);
+            if (space == null) return;
             
             String name = String.join(" ", ctx.<String[]>get("text"));
             if (name.length() > 64) {
@@ -78,9 +55,41 @@ public class SpaceCommand extends Command {
             sender.sendMessage(Component.text(Translations.get("success.changed_name")).color(NamedTextColor.GREEN));
         }, new ArgumentLiteral("name"), new ArgumentStringArray("text"));
 
+        addSyntax((sender, ctx) -> {
+            Space space = getSpace(sender);
+            if (space == null) return;
+
+            if (!space.potentiallyBroken) {
+                sender.sendMessage(Component.text(Translations.get("error.space.not_broken")).color(NamedTextColor.RED));
+                return;
+            }
+
+            space.potentiallyBroken = false;
+            sender.sendMessage(Component.text(Translations.get("success.space.marked_stable")).color(NamedTextColor.GREEN));
+        }, new ArgumentLiteral("mark_stable"));
+
         setDefaultExecutor((sender, ctx) -> {
             sender.sendMessage(Component.text(Translations.get("error.needs.subcommand")).color(NamedTextColor.RED));
         });
+    }
+
+    private Space getSpace(CommandSender sender) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text(Translations.get("error.needs.player")).color(NamedTextColor.RED));
+            return null;
+        }
+        Space space = SpaceManager.getSpaceForPlayer(player);
+        if (space == null) {
+            sender.sendMessage(Component.text(Translations.get("error.needs.space")).color(NamedTextColor.RED));
+            return null;
+        }
+
+        if (!space.info.owner.equals(player.getUuid())) {
+            sender.sendMessage(Component.text(Translations.get("error.needs.owner")).color(NamedTextColor.RED));
+            return null;
+        }
+
+        return space;
     }
 
 }

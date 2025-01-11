@@ -25,7 +25,7 @@ public class OnPlayerStartGlidingNode extends Node {
     @Override
     public void init(CodeEvaluator evaluator) {
         evaluator.events.addListener(PlayerStartFlyingWithElytraEvent.class, event -> {
-            CodeThread thread = evaluator.newCodeThread();
+            CodeThread thread = evaluator.newCodeThread(event);
             thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
             thread.sendSignal(signal);
             thread.clearQueue();

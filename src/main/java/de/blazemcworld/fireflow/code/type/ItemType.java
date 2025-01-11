@@ -23,7 +23,7 @@ public class ItemType extends WireType<ItemStack> {
     }
 
     @Override
-    public ItemStack convert(Object obj) {
+    public ItemStack checkType(Object obj) {
         if (obj instanceof ItemStack item) return item;
         return null;
     }

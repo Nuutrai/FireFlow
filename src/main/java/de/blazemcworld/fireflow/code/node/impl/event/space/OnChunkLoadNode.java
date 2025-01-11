@@ -32,7 +32,7 @@ public class OnChunkLoadNode extends Node {
         evaluator.events.addListener(InstanceChunkLoadEvent.class, event -> {
             if (SpaceInstance.chunkNotInBounds(event.getChunkX(), event.getChunkZ())) return;
             MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-                CodeThread thread = evaluator.newCodeThread();
+                CodeThread thread = evaluator.newCodeThread(event);
                 thread.setThreadValue(x, event.getChunkX() * 16.0);
                 thread.setThreadValue(z, event.getChunkZ() * 16.0);
                 thread.sendSignal(signal);

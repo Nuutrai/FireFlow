@@ -15,7 +15,7 @@ public class VariableStore {
     private final HashMap<String, WireType<?>> types = new HashMap<>();
 
     public <T> T get(String name, WireType<T> type) {
-        T out = type.convert(values.get(name));
+        T out = type.checkType(values.get(name));
         if (out == null) out = type.defaultValue();
         return out;
     }

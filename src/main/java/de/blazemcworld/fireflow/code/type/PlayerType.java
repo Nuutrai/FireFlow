@@ -24,7 +24,7 @@ public class PlayerType extends WireType<PlayerValue> {
     }
 
     @Override
-    public PlayerValue convert(Object obj) {
+    public PlayerValue checkType(Object obj) {
         if (obj instanceof PlayerValue player) return player;
         return null;
     }

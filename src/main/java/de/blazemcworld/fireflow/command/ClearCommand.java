@@ -11,6 +11,7 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentLiteral;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.metadata.other.InteractionMeta;
 
 public class ClearCommand extends Command {
 
@@ -35,7 +36,7 @@ public class ClearCommand extends Command {
 
             space.editor.rootWidgets.clear();
             for (Entity e : space.code.getEntities()) {
-                if (e instanceof Player) continue;
+                if (e instanceof Player || e.getEntityMeta() instanceof InteractionMeta) continue;
                 e.remove();
             }
             space.editor.functions.clear();

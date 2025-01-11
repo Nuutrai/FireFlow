@@ -34,7 +34,7 @@ public class NumberType extends WireType<Double> {
     }
 
     @Override
-    public Double convert(Object obj) {
+    public Double checkType(Object obj) {
         if (obj instanceof Double d) return d;
         return null;
     }

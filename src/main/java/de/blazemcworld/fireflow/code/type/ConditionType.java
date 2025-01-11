@@ -32,7 +32,7 @@ public class ConditionType extends WireType<Boolean> {
     }
 
     @Override
-    public Boolean convert(Object obj) {
+    public Boolean checkType(Object obj) {
         if (obj instanceof Boolean b) return b;
         return null;
     }

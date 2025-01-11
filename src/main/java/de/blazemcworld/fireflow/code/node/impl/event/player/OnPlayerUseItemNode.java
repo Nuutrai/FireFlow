@@ -31,7 +31,7 @@ public class OnPlayerUseItemNode extends Node {
     @Override
     public void init(CodeEvaluator evaluator) {
         evaluator.events.addListener(PlayerUseItemEvent.class, event -> {
-            CodeThread thread = evaluator.newCodeThread();
+            CodeThread thread = evaluator.newCodeThread(event);
             thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
             thread.setThreadValue(item, event.getItemStack());
             thread.sendSignal(signal);

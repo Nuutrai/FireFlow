@@ -20,12 +20,12 @@ public abstract class WireType<T> {
     }
 
     public abstract T defaultValue();
-    public abstract T convert(Object obj);
+    public abstract T checkType(Object obj);
     public abstract JsonElement toJson(T obj);
     public abstract T fromJson(JsonElement json);
 
     public JsonElement convertToJson(Object obj) {
-        return toJson(convert(obj));
+        return toJson(checkType(obj));
     }
 
     public T parseInset(String str) {
@@ -53,9 +53,17 @@ public abstract class WireType<T> {
     }
 
     public String stringify(Object value) {
-        return stringifyInternal(convert(value));
+        return stringifyInternal(checkType(value));
     }
 
     protected abstract String stringifyInternal(T value);
 
+    public T convert(WireType<?> other, Object v) {
+        T checked = checkType(v);
+        return checked != null ? checked : defaultValue();
+    }
+
+    public boolean canConvert(WireType<?> other) {
+        return false;
+    }
 }
