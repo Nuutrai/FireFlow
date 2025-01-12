@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class MonitorCommand extends Command {
 
-    private static HashMap<Player, Space> monitoring = new HashMap<>();
+    private static final HashMap<Player, Space> monitoring = new HashMap<>();
 
     public MonitorCommand() {
         super("monitor");
@@ -33,7 +33,7 @@ public class MonitorCommand extends Command {
                 return;
             }
             
-            if (!space.isOwnerOrContributor(player)) {
+            if (!space.isOwnerOrDeveloper(player)) {
                 sender.sendMessage(Component.text(Translations.get("error.needs.permission")).color(NamedTextColor.RED));
                 return;
             }
@@ -49,7 +49,7 @@ public class MonitorCommand extends Command {
                 if (!monitoring.containsKey(player)) return TaskSchedule.stop();
                 Space target = monitoring.get(player);
                 Space current = SpaceManager.getSpaceForPlayer(player);
-                if (target == null || current == null || current != target || !target.isOwnerOrContributor(player)) {
+                if (target == null || current == null || current != target || !target.isOwnerOrDeveloper(player)) {
                     monitoring.remove(player);
                     player.sendActionBar(Component.empty());
                     return TaskSchedule.stop();

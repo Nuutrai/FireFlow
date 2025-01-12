@@ -19,7 +19,8 @@ public class SpaceCommand extends Command {
         super("space");
 
         addSubcommand(new MonitorCommand());
-        addSubcommand(new ContributorCommand());
+        addSubcommand(new ContributorCommand("developer", space -> space.info.developers));
+        addSubcommand(new ContributorCommand("builder", space -> space.info.builders));
         addSubcommand(new VariablesCommand());
         addSubcommand(new ClearCommand());
         

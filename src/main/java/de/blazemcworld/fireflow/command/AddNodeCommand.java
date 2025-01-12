@@ -9,9 +9,9 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentString;
 import net.minestom.server.entity.Player;
 
-public class SearchNodeCommand extends Command {
-    public SearchNodeCommand() {
-        super("searchnodes");
+public class AddNodeCommand extends Command {
+    public AddNodeCommand() {
+        super("add?", "add");
 
         addSyntax((sender, ctx) -> {
             if (!(sender instanceof Player player)) {
@@ -30,7 +30,7 @@ public class SearchNodeCommand extends Command {
                 return;
             }
 
-            space.editor.searchNodes(player, ctx.get("query"));
+            space.editor.addNode(player, ctx.get("query"), ctx.getCommandName().equals("add?"));
         }, new ArgumentString("query"));
     }
 }

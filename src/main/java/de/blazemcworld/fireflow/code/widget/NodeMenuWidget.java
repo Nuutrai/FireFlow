@@ -124,7 +124,7 @@ public class NodeMenuWidget implements Widget {
         root = button;
     }
 
-    private void createNode(CodeEditor e, Vec pos, Node node, List<WireType<?>> types) {
+    public static void createNode(CodeEditor e, Vec pos, Node node, List<WireType<?>> types) {
         if (node instanceof FunctionCallNode call) {
             if (!e.functions.containsKey(call.function.name)) return;
             if (e.functions.get(call.function.name) != call.function) return;

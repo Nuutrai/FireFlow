@@ -40,7 +40,7 @@ public class VariablesCommand extends Command {
             return;
         }
 
-        if (!space.isOwnerOrContributor(player)) {
+        if (!space.isOwnerOrDeveloper(player)) {
             sender.sendMessage(Component.text(Translations.get("error.needs.permission")).color(NamedTextColor.RED));
             return;
         }

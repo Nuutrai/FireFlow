@@ -1,9 +1,9 @@
 package de.blazemcworld.fireflow.space;
 
+import net.minestom.server.item.Material;
+
 import java.util.Set;
 import java.util.UUID;
-
-import net.minestom.server.item.Material;
 
 public class SpaceInfo {
 
@@ -11,7 +11,8 @@ public class SpaceInfo {
     public String name;
     public Material icon;
     public UUID owner;
-    public Set<UUID> contributors;
+    public Set<UUID> developers;
+    public Set<UUID> builders;
 
     public SpaceInfo(int id) {
         this.id = id;

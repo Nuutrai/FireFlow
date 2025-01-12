@@ -1,8 +1,5 @@
 package de.blazemcworld.fireflow.command;
 
-import java.io.IOException;
-import java.util.UUID;
-
 import de.blazemcworld.fireflow.space.Space;
 import de.blazemcworld.fireflow.space.SpaceManager;
 import de.blazemcworld.fireflow.util.Transfer;
@@ -16,10 +13,18 @@ import net.minestom.server.command.builder.arguments.ArgumentString;
 import net.minestom.server.entity.Player;
 import net.minestom.server.utils.mojang.MojangUtils;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+
 public class ContributorCommand extends Command {
-    
-    public ContributorCommand() {
-        super("contributor");
+
+    private final Function<Space, Set<UUID>> fn;
+
+    public ContributorCommand(String id, Function<Space, Set<UUID>> fn) {
+        super(id);
+        this.fn = fn;
 
         setDefaultExecutor((sender, ctx) -> {
             run(sender, "list", null);
@@ -55,65 +60,66 @@ public class ContributorCommand extends Command {
         }
 
         new Thread(() -> {
-                if (action.equals("list")) {
-                    if (space.info.contributors.isEmpty()) {
-                        sender.sendMessage(Component.text(Translations.get("error.empty.contributors")).color(NamedTextColor.GRAY));
-                        return;
-                    }
-                    sender.sendMessage(Component.text(Translations.get("success.contributors.list")).color(NamedTextColor.YELLOW));
-                    for (UUID contributor : space.info.contributors) {
-                        String name = "Internal Error";
-                        try {
-                            name = MojangUtils.getUsername(contributor);
-                        } catch (IOException ignored) {
-                        }
-                        sender.sendMessage(Component.text(name).color(NamedTextColor.GOLD)
-                            .append(Component.text(" (" + contributor + ")").color(NamedTextColor.GRAY))
-                        );
-                    }
+            Set<UUID> contributors = fn.apply(space);
+            if (action.equals("list")) {
+                if (contributors.isEmpty()) {
+                    sender.sendMessage(Component.text(Translations.get("error.empty.contributors")).color(NamedTextColor.GRAY));
                     return;
                 }
-
-                if (action.equals("add")) {
-                    UUID contributor = null;
+                sender.sendMessage(Component.text(Translations.get("success.contributors.list")).color(NamedTextColor.YELLOW));
+                for (UUID contributor : contributors) {
+                    String name = "Internal Error";
                     try {
-                        contributor = MojangUtils.getUUID(other);
+                        name = MojangUtils.getUsername(contributor);
                     } catch (IOException ignored) {
                     }
-                    if (contributor == null) {
-                        sender.sendMessage(Component.text(Translations.get("error.invalid.player")).color(NamedTextColor.RED));
-                        return;
-                    }
-                    if (space.info.contributors.contains(contributor)) {
-                        sender.sendMessage(Component.text(Translations.get("error.already.contributor")).color(NamedTextColor.RED));
-                        return;
-                    }
-                    space.info.contributors.add(contributor);
-                    sender.sendMessage(Component.text(Translations.get("success.contributors.added")).color(NamedTextColor.GREEN));
-                    return;
+                    sender.sendMessage(Component.text(name).color(NamedTextColor.GOLD)
+                        .append(Component.text(" (" + contributor + ")").color(NamedTextColor.GRAY))
+                    );
                 }
+                return;
+            }
 
-                if (action.equals("remove")) {
-                    UUID contributor = null;
-                    try {
-                        contributor = MojangUtils.getUUID(other);
-                    } catch (IOException ignored) {
-                    }
-                    if (contributor == null) {
-                        sender.sendMessage(Component.text(Translations.get("error.invalid.player")).color(NamedTextColor.RED));
-                        return;
-                    }
-                    if (!space.info.contributors.contains(contributor)) {
-                        sender.sendMessage(Component.text(Translations.get("error.not.contributor")).color(NamedTextColor.RED));
-                        return;
-                    }
-                    space.info.contributors.remove(contributor);
-                    if (space.code.getPlayerByUuid(contributor) != null) {
-                        Transfer.move(space.code.getPlayerByUuid(contributor), space.play);
-                    }
-                    sender.sendMessage(Component.text(Translations.get("success.contributors.removed")).color(NamedTextColor.GREEN));
+            if (action.equals("add")) {
+                UUID contributor = null;
+                try {
+                    contributor = MojangUtils.getUUID(other);
+                } catch (IOException ignored) {
+                }
+                if (contributor == null) {
+                    sender.sendMessage(Component.text(Translations.get("error.invalid.player")).color(NamedTextColor.RED));
                     return;
                 }
+                if (contributors.contains(contributor)) {
+                    sender.sendMessage(Component.text(Translations.get("error.already.contributor")).color(NamedTextColor.RED));
+                    return;
+                }
+                contributors.add(contributor);
+                sender.sendMessage(Component.text(Translations.get("success.contributors.added")).color(NamedTextColor.GREEN));
+                return;
+            }
+
+            if (action.equals("remove")) {
+                UUID contributor = null;
+                try {
+                    contributor = MojangUtils.getUUID(other);
+                } catch (IOException ignored) {
+                }
+                if (contributor == null) {
+                    sender.sendMessage(Component.text(Translations.get("error.invalid.player")).color(NamedTextColor.RED));
+                    return;
+                }
+                if (!contributors.contains(contributor)) {
+                    sender.sendMessage(Component.text(Translations.get("error.not.contributor")).color(NamedTextColor.RED));
+                    return;
+                }
+                contributors.remove(contributor);
+                if (space.code.getPlayerByUuid(contributor) != null) {
+                    Transfer.move(space.code.getPlayerByUuid(contributor), space.play);
+                }
+                sender.sendMessage(Component.text(Translations.get("success.contributors.removed")).color(NamedTextColor.GREEN));
+                return;
+            }
         }).start();
     }
 }

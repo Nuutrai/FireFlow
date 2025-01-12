@@ -15,12 +15,12 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
+import net.minestom.server.event.player.PlayerBlockBreakEvent;
+import net.minestom.server.event.player.PlayerBlockPlaceEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
-import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.IChunkLoader;
-import net.minestom.server.instance.InstanceContainer;
-import net.minestom.server.instance.LightingChunk;
+import net.minestom.server.instance.*;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.timer.TaskSchedule;
@@ -37,6 +37,7 @@ public class Space {
     public final SpaceInfo info;
     public final InstanceContainer play = new SpaceInstance();
     public final InstanceContainer code = MinecraftServer.getInstanceManager().createInstanceContainer();
+    public final SharedInstance build = MinecraftServer.getInstanceManager().createSharedInstance(play);
     public final CodeEditor editor;
     public CodeEvaluator evaluator;
     public CodeDebugger debugger;
@@ -84,10 +85,19 @@ public class Space {
             emptySince = -1;
             if (potentiallyBroken) event.getPlayer().sendMessage(Component.text(Translations.get("error.space.potentially_broken")).color(NamedTextColor.RED));
         });
-        
+        build.eventNode().addListener(PlayerSpawnEvent.class, event -> {
+            emptySince = -1;
+            if (potentiallyBroken) event.getPlayer().sendMessage(Component.text(Translations.get("error.space.potentially_broken")).color(NamedTextColor.RED));
+
+            event.getPlayer().setGameMode(GameMode.CREATIVE);
+        });
+
+        play.eventNode().addListener(PlayerBlockPlaceEvent.class, e -> e.setCancelled(true));
+        play.eventNode().addListener(PlayerBlockBreakEvent.class, e -> e.setCancelled(true));
+
         MinecraftServer.getSchedulerManager().scheduleTask(() -> {
             if (!loaded) return TaskSchedule.stop();
-            if (emptySince == -1 && play.getPlayers().isEmpty() && code.getPlayers().isEmpty()) {
+            if (emptySince == -1 && play.getPlayers().isEmpty() && code.getPlayers().isEmpty() && build.getPlayers().isEmpty()) {
                 emptySince = System.currentTimeMillis();
             }
             return TaskSchedule.seconds(1);
@@ -111,7 +121,7 @@ public class Space {
         evaluator.stop();
         for (Player player : play.getPlayers()) {
             player.sendMessage(Component.text(Translations.get("reload." + reason)).color(reason.equals("cpu") ? NamedTextColor.RED : NamedTextColor.YELLOW));
-            if (isOwnerOrContributor(player)) {
+            if (isOwnerOrDeveloper(player)) {
                 Transfer.move(player, code);
             } else {
                 Transfer.move(player, Lobby.instance);
@@ -164,10 +174,15 @@ public class Space {
         evaluator.stop();
         MinecraftServer.getInstanceManager().unregisterInstance(play);
         MinecraftServer.getInstanceManager().unregisterInstance(code);
+        MinecraftServer.getInstanceManager().unregisterInstance(build);
     }
 
-    public boolean isOwnerOrContributor(Player player) {
-        return info.owner.equals(player.getUuid()) || info.contributors.contains(player.getUuid());
+    public boolean isOwnerOrBuilder(Player player) {
+        return info.owner.equals(player.getUuid()) || info.builders.contains(player.getUuid());
+    }
+
+    public boolean isOwnerOrDeveloper(Player player) {
+        return info.owner.equals(player.getUuid()) || info.developers.contains(player.getUuid());
     }
 
     private static void deleteRecursively(Path path) throws IOException {

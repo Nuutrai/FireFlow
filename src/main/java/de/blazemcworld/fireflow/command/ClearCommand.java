@@ -50,14 +50,27 @@ public class ClearCommand extends Command {
             Space space = getSpace(sender);
             if (space == null) return;
 
-            space.info.contributors.clear();
-            sender.sendMessage(Component.text(Translations.get("success.cleared.contributors")).color(NamedTextColor.GREEN));
+            space.info.builders.clear();
+            sender.sendMessage(Component.text(Translations.get("success.cleared.builders")).color(NamedTextColor.GREEN));
 
             for (Player each : space.code.getPlayers()) {
                 if (each == sender) continue;
                 Transfer.move(each, space.play);
             }
-        }, new ArgumentLiteral("contributors"));
+        }, new ArgumentLiteral("builders"));
+
+        addSyntax((sender, ctx) -> {
+            Space space = getSpace(sender);
+            if (space == null) return;
+
+            space.info.developers.clear();
+            sender.sendMessage(Component.text(Translations.get("success.cleared.developers")).color(NamedTextColor.GREEN));
+
+            for (Player each : space.code.getPlayers()) {
+                if (each == sender) continue;
+                Transfer.move(each, space.play);
+            }
+        }, new ArgumentLiteral("developers"));
     }
 
     private Space getSpace(CommandSender sender) {

@@ -11,10 +11,10 @@ import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.number.ArgumentInteger;
 import net.minestom.server.entity.Player;
 
-public class CodeCommand extends Command {
+public class BuildCommand extends Command {
 
-    public CodeCommand() {
-        super("code", "dev");
+    public BuildCommand() {
+        super("build");
 
         setDefaultExecutor((sender, ctx) -> {
             if (sender instanceof Player player) {
@@ -24,17 +24,17 @@ public class CodeCommand extends Command {
                     return;
                 }
 
-                if (space.code == player.getInstance()) {
-                    sender.sendMessage(Component.text(Translations.get("error.already.coding")).color(NamedTextColor.RED));
+                if (space.build == player.getInstance()) {
+                    sender.sendMessage(Component.text(Translations.get("error.already.building")).color(NamedTextColor.RED));
                     return;
                 }
 
-                if (!space.isOwnerOrDeveloper(player)) {
+                if (!space.isOwnerOrBuilder(player)) {
                     sender.sendMessage(Component.text(Translations.get("error.needs.permission")).color(NamedTextColor.RED));
                     return;
                 }
 
-                Transfer.move(player, space.code);
+                Transfer.move(player, space.build);
             } else {
                 sender.sendMessage(Component.text(Translations.get("error.needs.player")).color(NamedTextColor.RED));
             }
@@ -51,19 +51,19 @@ public class CodeCommand extends Command {
                 return;
             }
 
-            if (!info.owner.equals(player.getUuid()) && !info.developers.contains(player.getUuid())) {
+            if (!info.owner.equals(player.getUuid()) && !info.builders.contains(player.getUuid())) {
                 sender.sendMessage(Component.text(Translations.get("error.needs.permission")).color(NamedTextColor.RED));
                 return;
             }
 
             Space space = SpaceManager.getOrLoadSpace(info);
 
-            if (space.code == player.getInstance()) {
-                sender.sendMessage(Component.text(Translations.get("error.already.coding")).color(NamedTextColor.RED));
+            if (space.build == player.getInstance()) {
+                sender.sendMessage(Component.text(Translations.get("error.already.building")).color(NamedTextColor.RED));
                 return;
             }
 
-            Transfer.move(player, space.code);
+            Transfer.move(player, space.build);
         }, new ArgumentInteger("id"));
     }
 

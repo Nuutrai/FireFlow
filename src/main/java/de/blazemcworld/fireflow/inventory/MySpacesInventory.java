@@ -1,9 +1,5 @@
 package de.blazemcworld.fireflow.inventory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
 import de.blazemcworld.fireflow.code.type.TextType;
 import de.blazemcworld.fireflow.space.SpaceInfo;
 import de.blazemcworld.fireflow.space.SpaceManager;
@@ -17,6 +13,10 @@ import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 public class MySpacesInventory {
 
@@ -61,7 +61,8 @@ public class MySpacesInventory {
                 info.name = p.getUsername() + "'s New Space";
                 info.icon = Material.PAPER;
                 info.owner = p.getUuid();
-                info.contributors = new HashSet<>();
+                info.developers = new HashSet<>();
+                info.builders = new HashSet<>();
                 SpaceManager.info.put(info.id, info);
                 MySpacesInventory.open(player);
                 return;

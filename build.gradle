@@ -20,6 +20,9 @@ dependencies {
     // logging
     implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.24.3'
     implementation 'org.apache.logging.log4j:log4j-core:2.24.3'
+
+    // fuzzy matching
+    implementation 'me.xdrop:fuzzywuzzy:1.4.0'
 }
 
 jar {
