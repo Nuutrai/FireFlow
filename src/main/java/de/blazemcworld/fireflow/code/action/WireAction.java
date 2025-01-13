@@ -72,14 +72,14 @@ public class WireAction implements Action {
         if (inputWire != null) {
             if (inputWire.line.from.x() != wires.getFirst().line.from.x()) wires.getFirst().line.to = wires.getFirst().line.to.withY(endPos.y());
             else wires.getFirst().line.to = wires.getFirst().line.to.withX(endPos.x());
-            positions = editor.pathfinder.findPath(wires.getFirst().line.to, endPos, 5, 256);
+            positions = editor.pathfinder.findPath(wires.getFirst().line.to, endPos);
             if (wires.size() == 1) {
                 WireWidget lastWire = new WireWidget(wires.getFirst(), type, startPos);
                 lastWire.update(editor.space.code);
                 wires.add(lastWire);
             }
         } else {
-            positions = editor.pathfinder.findPath(startPos, endPos, 5, 256);
+            positions = editor.pathfinder.findPath(startPos, endPos);
         }
         int index = (inputWire != null) ? 1 : 0;
         for (Vec position : positions) {
