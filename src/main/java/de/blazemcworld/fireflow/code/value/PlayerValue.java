@@ -1,10 +1,12 @@
 package de.blazemcworld.fireflow.code.value;
 
-import java.util.UUID;
-
 import de.blazemcworld.fireflow.code.CodeThread;
-import de.blazemcworld.fireflow.space.Space;
 import net.minestom.server.entity.Player;
+import net.minestom.server.instance.Instance;
+
+import java.util.UUID;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class PlayerValue {
     
@@ -18,20 +20,50 @@ public class PlayerValue {
         this.uuid = uuid;
     }
 
-    public Player get(Space space) {
-        return space.play.getPlayerByUuid(uuid);
+    public void use(Instance inst, Consumer<Player> cb) {
+        Player p = inst.getPlayerByUuid(uuid);
+        if (p != null) {
+            synchronized (p) {
+                if (p.getInstance() == inst) {
+                    cb.accept(p);
+                    return;
+                }
+            }
+        }
+        cb.accept(null);
     }
 
-    public boolean available(Space space) {
-        return get(space) != null;
+    public <T> T apply(Instance inst, Function<Player, T> fn) {
+        Player p = inst.getPlayerByUuid(uuid);
+        if (p != null) {
+            synchronized (p) {
+                if (p.getInstance() == inst) {
+                    return fn.apply(p);
+                }
+            }
+        }
+        return fn.apply(null);
     }
 
-    public Player get(CodeThread ctx) {
-        return get(ctx.evaluator.space);
+    public void tryUse(Instance inst, Consumer<Player> cb) {
+        use(inst, (p) -> {
+            if (p == null) return;
+            cb.accept(p);
+        });
     }
 
-    public boolean available(CodeThread ctx) {
-        return available(ctx.evaluator.space);
+    public <T> T tryGet(Instance inst, Function<Player, T> fn, T fallback) {
+        return apply(inst, p -> {
+            if (p == null) return fallback;
+            return fn.apply(p);
+        });
     }
 
+    public <T> T tryGet(CodeThread ctx, Function<Player, T> fn, T fallback) {
+        return tryGet(ctx.evaluator.space.play, fn, fallback);
+    }
+
+    public void tryUse(CodeThread ctx, Consumer<Player> cb) {
+        tryUse(ctx.evaluator.space.play, cb);
+    }
 }

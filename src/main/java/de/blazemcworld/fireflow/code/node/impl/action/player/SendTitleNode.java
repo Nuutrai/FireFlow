@@ -9,7 +9,6 @@ import de.blazemcworld.fireflow.code.value.PlayerValue;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
-import net.minestom.server.entity.Player;
 import net.minestom.server.item.Material;
 
 import java.time.Duration;
@@ -26,9 +25,7 @@ public class SendTitleNode extends Node {
         Input<Double> fade_out = new Input<>("fade_out", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue pv = player.getValue(ctx);
-            if (pv.available(ctx)) {
-                Player p = pv.get(ctx);
+            player.getValue(ctx).tryUse(ctx, p -> {
                 p.sendTitlePart(TitlePart.TITLE, title.getValue(ctx));
                 p.sendTitlePart(TitlePart.SUBTITLE, subtitle.getValue(ctx));
                 p.sendTitlePart(TitlePart.TIMES, Title.Times.times(
@@ -36,7 +33,7 @@ public class SendTitleNode extends Node {
                         Duration.ofSeconds(stay_number.getValue(ctx).intValue() / 20),
                         Duration.ofSeconds(fade_out.getValue(ctx).intValue() / 20)
                 ));
-            }
+            });
             ctx.sendSignal(next);
         });
     }

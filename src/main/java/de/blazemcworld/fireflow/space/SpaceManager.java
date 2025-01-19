@@ -118,4 +118,11 @@ public class SpaceManager {
         return null;
     }
 
+    public static List<Space> activeSpaces() {
+        List<Space> out = new ArrayList<>();
+        for (Space s : spaces.values()) {
+            if (!s.play.getPlayers().isEmpty()) out.add(s);
+        }
+        return out;
+    }
 }

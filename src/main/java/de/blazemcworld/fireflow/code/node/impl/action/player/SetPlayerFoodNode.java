@@ -15,8 +15,7 @@ public class SetPlayerFoodNode extends Node {
         Input<Double> food = new Input<>("food", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setFood(food.getValue(ctx).intValue());
+            player.getValue(ctx).tryUse(ctx, p -> p.setFood(food.getValue(ctx).intValue()));
             ctx.sendSignal(next);
         });
     }

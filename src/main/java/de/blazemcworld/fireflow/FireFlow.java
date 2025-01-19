@@ -5,10 +5,7 @@ import de.blazemcworld.fireflow.code.type.AllTypes;
 import de.blazemcworld.fireflow.command.*;
 import de.blazemcworld.fireflow.space.Lobby;
 import de.blazemcworld.fireflow.space.SpaceManager;
-import de.blazemcworld.fireflow.util.Config;
-import de.blazemcworld.fireflow.util.PlayerExitInstanceEvent;
-import de.blazemcworld.fireflow.util.TextWidth;
-import de.blazemcworld.fireflow.util.Translations;
+import de.blazemcworld.fireflow.util.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minestom.server.MinecraftServer;
@@ -43,6 +40,7 @@ public class FireFlow {
 
         MinecraftServer.setBrandName("FireFlow");
         MojangAuth.init();
+        MinecraftServer.getConnectionManager().setPlayerProvider(CustomPlayer::new);
 
         Translations.init();
         NodeList.init();

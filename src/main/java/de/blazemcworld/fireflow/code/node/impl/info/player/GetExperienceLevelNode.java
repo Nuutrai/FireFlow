@@ -12,10 +12,7 @@ public class GetExperienceLevelNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Double> level = new Output<>("level", NumberType.INSTANCE);
 
-        level.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getLevel() : 0.0;
-        });
+        level.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> (double) p.getLevel(), 0.0));
     }
 
     @Override

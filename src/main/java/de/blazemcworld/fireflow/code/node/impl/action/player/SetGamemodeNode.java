@@ -19,8 +19,7 @@ public class SetGamemodeNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
 
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) {
+            player.getValue(ctx).tryUse(ctx, p -> {
                 GameMode mode = switch (gamemode.getValue(ctx)) {
                     case "creative" -> GameMode.CREATIVE;
                     case "survival" -> GameMode.SURVIVAL;
@@ -28,8 +27,8 @@ public class SetGamemodeNode extends Node {
                     case "spectator" -> GameMode.SPECTATOR;
                     default -> null;
                 };
-                if (mode != null) p.get(ctx).setGameMode(mode);
-            }
+                if (mode != null) p.setGameMode(mode);
+            });
             ctx.sendSignal(next);
         });
     }

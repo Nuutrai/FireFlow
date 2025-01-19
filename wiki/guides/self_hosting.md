@@ -40,8 +40,6 @@ After you started the server the first time, there will be a `config.json` in th
 - `motd` can be any text, supporting [MiniMessage](https://docs.advntr.dev/minimessage/format.html) tags.
 - `port` specifies the port the server should listen on, defaulting to 25565 (the default Minecraft port).
 - `translations` specifies the language to use for the server. Available languages can be found [here](https://github.com/BlazeMCworld/FireFlow/tree/main/src/main/resources/languages)
-- `limits.cpuUsage` is the maximum amount of CPU time a single space can use in nanoseconds.
-- `limits.cpuHistory` is the amount of Minecraft ticks to record CPU usage for.
 - `limits.spacesPerPlayer` defines how many spaces a player can own.
 - `limits.totalSpaces` limits the total amount of spaces the server can have.
 - `limits.spaceChunkDistance` decides how large the playable area of a space is. 5 for example means 5 chunks in every direction, so 10x10 chunks (10 because it goes both ways). Each chunk is 16x16 blocks, so the total playable area would be 160x160 blocks.

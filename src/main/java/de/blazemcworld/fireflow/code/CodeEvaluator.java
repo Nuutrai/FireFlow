@@ -9,30 +9,32 @@ import de.blazemcworld.fireflow.code.node.impl.function.FunctionOutputsNode;
 import de.blazemcworld.fireflow.code.widget.NodeWidget;
 import de.blazemcworld.fireflow.code.widget.Widget;
 import de.blazemcworld.fireflow.space.Space;
-import de.blazemcworld.fireflow.util.Config;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.Event;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.trait.InstanceEvent;
-import net.minestom.server.timer.TaskSchedule;
+import net.minestom.server.timer.Scheduler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class CodeEvaluator {
 
     public final Space space;
     public final EventNode<InstanceEvent> events;
     private boolean stopped = false;
-    private long cpuUsedTick = 0;
-    private long cpuUsedBefore = 0;
-    public int cpuPercentage = 0;
-    private final List<Long> cpuHistory = new LinkedList<>();
+    public long tickStart = System.currentTimeMillis();
+    public boolean processing = false;
     public final VariableStore sessionVariables = new VariableStore();
     public final Set<Node> nodes;
+    public final Scheduler scheduler;
+    public final LinkedList<Integer> cpuHistory = new LinkedList<>();
 
     public CodeEvaluator(Space space) {
         this.space = space;
+        scheduler = space.play.scheduler();
 
         Set<Node> nodes = new HashSet<>();
         for (Widget widget : space.editor.rootWidgets) {
@@ -50,15 +52,36 @@ public class CodeEvaluator {
             node.init(this);
         }
 
-        MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-            if (isStopped()) return TaskSchedule.stop();
-            cpuPercentage = Math.min(100, (int) ((cpuUsedBefore + cpuUsedTick) * 100 / Config.store.limits().cpuUsage()));
-            cpuHistory.add(cpuUsedTick);
-            if (cpuHistory.size() >= Config.store.limits().cpuHistory()) cpuHistory.removeFirst();
-            cpuUsedBefore = cpuHistory.stream().reduce(0L, Long::sum);
-            cpuUsedTick = 0;
-            return TaskSchedule.tick(1);
-        }, TaskSchedule.tick(1));
+        Thread t = new Thread(() -> {
+            long nextTick = System.currentTimeMillis();
+            while (!this.isStopped()) {
+                tickStart = System.currentTimeMillis();
+                synchronized (cpuHistory) {
+                    if (cpuHistory.size() >= 20) cpuHistory.removeFirst();
+                    processing = true;
+                }
+                space.play.spaceTick(nextTick);
+                synchronized (cpuHistory) {
+                    processing = false;
+                    cpuHistory.add((int) (System.currentTimeMillis() - tickStart));
+                }
+                nextTick += 50;
+                long now = System.currentTimeMillis();
+                if (now < nextTick) {
+                    try {
+                        Thread.sleep(nextTick - now);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else if (now + 1000 < nextTick) {
+                    long skip = (nextTick - now - 500) / 50;
+                    nextTick += skip * 50;
+                }
+            }
+        }, "Space-" + space.info.id);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.setDaemon(true);
+        t.start();
     }
 
     public void stop() {
@@ -157,14 +180,5 @@ public class CodeEvaluator {
 
     public CodeThread newCodeThread(Event event) {
         return new CodeThread(this, event);
-    }
-
-    public boolean timelimitHit(long elapsed) {
-        cpuUsedTick += elapsed;
-        return cpuUsedBefore + cpuUsedTick > Config.store.limits().cpuUsage();
-    }
-
-    public long remainingCpu() {
-        return Config.store.limits().cpuUsage() - cpuUsedBefore - cpuUsedTick;
     }
 }

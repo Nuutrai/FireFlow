@@ -1,7 +1,6 @@
 package de.blazemcworld.fireflow.util;
 
 import it.unimi.dsi.fastutil.Pair;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.CoordConversion;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.Instance;
@@ -35,7 +34,7 @@ public class ChunkLoadingBlockBatch extends AbsoluteBlockBatch {
         }
 
         CompletableFuture.allOf(needed.toArray(new CompletableFuture[0])).thenRun(() ->
-                MinecraftServer.getSchedulerManager().scheduleEndOfTick(()
+                instance.scheduler().scheduleEndOfTick(()
                         -> super.apply(instance, callback, safeCallback)));
 
         return null;

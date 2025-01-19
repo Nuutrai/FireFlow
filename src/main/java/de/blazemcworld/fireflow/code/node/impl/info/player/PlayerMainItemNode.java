@@ -4,6 +4,7 @@ import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.ItemType;
 import de.blazemcworld.fireflow.code.type.PlayerType;
 import de.blazemcworld.fireflow.code.value.PlayerValue;
+import net.minestom.server.entity.Player;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
@@ -14,10 +15,7 @@ public class PlayerMainItemNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<ItemStack> item = new Output<>("item", ItemType.INSTANCE);
 
-        item.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getItemInMainHand() : ItemStack.AIR;
-        });
+        item.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, Player::getItemInMainHand, ItemStack.AIR));
     }
 
     @Override

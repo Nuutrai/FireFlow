@@ -2,18 +2,16 @@ package de.blazemcworld.fireflow.code;
 
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionCallNode;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.Event;
-import net.minestom.server.timer.TaskSchedule;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Stack;
 
 public class CodeThread {
 
     public final CodeEvaluator evaluator;
     private final HashMap<Node.Output<?>, Object> threadValues = new HashMap<>();
     private final Stack<Runnable> todo = new Stack<>();
-    private long lastSync = System.nanoTime();
     public final VariableStore threadVariables = new VariableStore();
     public final Stack<FunctionCallNode> functionStack = new Stack<>();
     public Event event = null;
@@ -51,25 +49,10 @@ public class CodeThread {
     }
 
     public void clearQueue() {
-        timelimitHit();
+        if (evaluator.isStopped()) return;
         while (!todo.isEmpty() && !paused) {
             todo.pop().run();
-            timelimitHit();
-        }
-    }
-
-    public void timelimitHit() {
-        long now = System.nanoTime();
-        long elapsed = now - lastSync;
-        lastSync = now;
-        if (evaluator.timelimitHit(elapsed) && !paused) {
-            pause();
-            MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-                if (evaluator.isStopped()) return TaskSchedule.stop();
-                if (evaluator.remainingCpu() <= 0) return TaskSchedule.nextTick();
-                resume();
-                return TaskSchedule.stop();
-            }, TaskSchedule.nextTick());
+            if (evaluator.isStopped()) return;
         }
     }
 
@@ -81,12 +64,10 @@ public class CodeThread {
 
     public void pause() {
         paused = true;
-        timelimitHit();
     }
 
     public void resume() {
         paused = false;
-        lastSync = System.nanoTime();
         clearQueue();
     }
 }

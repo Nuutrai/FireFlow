@@ -27,8 +27,6 @@ public class WhileNode extends Node {
             };
 
             step[0].run();
-
-            ctx.sendSignal(next);
         });
     }
 

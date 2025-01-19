@@ -1,9 +1,8 @@
 package de.blazemcworld.fireflow.code.node.impl.flow;
 
 import de.blazemcworld.fireflow.code.node.Node;
-import de.blazemcworld.fireflow.code.type.SignalType;
 import de.blazemcworld.fireflow.code.type.NumberType;
-import net.minestom.server.MinecraftServer;
+import de.blazemcworld.fireflow.code.type.SignalType;
 import net.minestom.server.item.Material;
 import net.minestom.server.timer.TaskSchedule;
 
@@ -22,7 +21,7 @@ public class PauseThreadNode extends Node {
 
             AtomicInteger remaining = new AtomicInteger(ticks.getValue(ctx).intValue());
 
-            MinecraftServer.getSchedulerManager().submitTask(() -> {
+            ctx.evaluator.scheduler.submitTask(() -> {
                 if (ctx.evaluator.isStopped()) return TaskSchedule.stop();
                 if (remaining.getAndDecrement() <= 0) {
                     ctx.sendSignal(next);

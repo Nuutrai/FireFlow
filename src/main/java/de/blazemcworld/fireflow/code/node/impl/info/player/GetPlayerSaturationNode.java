@@ -12,10 +12,7 @@ public class GetPlayerSaturationNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Node.Output<Double> saturation = new Output<>("saturation", NumberType.INSTANCE);
 
-        saturation.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getFoodSaturation() : 0.0;
-        });
+        saturation.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> (double) p.getFoodSaturation(), 0.0));
     }
 
     @Override

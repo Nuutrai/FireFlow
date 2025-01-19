@@ -12,10 +12,7 @@ public class GetPlayerFoodNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Double> food = new Output<>("food", NumberType.INSTANCE);
 
-        food.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getFood() : 0.0;
-        });
+        food.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> (double) p.getFood(), 0.0));
     }
 
     @Override

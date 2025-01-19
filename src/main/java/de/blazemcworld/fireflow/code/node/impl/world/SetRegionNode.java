@@ -6,7 +6,6 @@ import de.blazemcworld.fireflow.code.type.SignalType;
 import de.blazemcworld.fireflow.code.type.StringType;
 import de.blazemcworld.fireflow.code.type.VectorType;
 import de.blazemcworld.fireflow.util.Config;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.batch.AbsoluteBlockBatch;
 import net.minestom.server.instance.block.Block;
@@ -44,7 +43,7 @@ public class SetRegionNode extends Node {
 
                     if (ctx.evaluator.space.play.getChunk(chunk[0], chunk[1]) == null) {
                         ctx.evaluator.space.play.loadChunk(chunk[0], chunk[1]).thenRun(() -> {
-                            MinecraftServer.getSchedulerManager().scheduleNextTick(() -> {
+                            ctx.evaluator.scheduler.scheduleNextTick(() -> {
                                 worker.submit(step[0]);
                                 worker.resume();
                             });
@@ -67,8 +66,8 @@ public class SetRegionNode extends Node {
                     }
 
                     batch.apply(ctx.evaluator.space.play, () -> {
-                        MinecraftServer.getSchedulerManager().scheduleTask(() -> {
-                            if (ctx.evaluator.remainingCpu() < 0) return TaskSchedule.nextTick();
+                        ctx.evaluator.scheduler.scheduleTask(() -> {
+                            if (ctx.evaluator.isStopped()) return TaskSchedule.stop();
                             chunk[0]++;
                             if (chunk[0] > max.chunkX()) {
                                 chunk[0] = min.chunkX();

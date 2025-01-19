@@ -15,8 +15,7 @@ public class SetExperienceLevelNode extends Node {
         Input<Double> level = new Input<>("level", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setLevel(level.getValue(ctx).intValue());
+            player.getValue(ctx).tryUse(ctx, p -> p.setLevel(level.getValue(ctx).intValue()));
             ctx.sendSignal(next);
         });
     }

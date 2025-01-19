@@ -12,10 +12,7 @@ public class GetExperiencePercentageNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Double> percentage = new Output<>("percentage", NumberType.INSTANCE);
 
-        percentage.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getExp() * 100f : 0.0;
-        });
+        percentage.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> p.getExp() * 100.0, 0.0));
     }
 
     @Override

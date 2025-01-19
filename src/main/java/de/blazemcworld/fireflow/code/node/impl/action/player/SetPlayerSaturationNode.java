@@ -15,8 +15,7 @@ public class SetPlayerSaturationNode extends Node {
         Input<Double> saturation = new Input<>("saturation", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setFoodSaturation(saturation.getValue(ctx).floatValue());
+            player.getValue(ctx).tryUse(ctx, p -> p.setFoodSaturation(saturation.getValue(ctx).floatValue()));
             ctx.sendSignal(next);
         });
     }

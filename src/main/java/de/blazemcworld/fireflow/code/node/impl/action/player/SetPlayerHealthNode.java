@@ -15,8 +15,7 @@ public class SetPlayerHealthNode extends Node {
         Input<Double> health = new Input<>("health", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setHealth(health.getValue(ctx).intValue());
+            player.getValue(ctx).tryUse(ctx, p -> p.setHealth(health.getValue(ctx).intValue()));
             ctx.sendSignal(next);
         });
     }

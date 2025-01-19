@@ -22,11 +22,10 @@ public class SendParticleNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
 
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).sendPacket(new ParticlePacket(
+            player.getValue(ctx).tryUse(ctx, p -> p.sendPacket(new ParticlePacket(
                     particle.getValue(ctx), position.getValue(ctx), Vec.ZERO,
                     0, Math.min(count.getValue(ctx).intValue(), 256)
-            ));
+            )));
             ctx.sendSignal(next);
         });
     }

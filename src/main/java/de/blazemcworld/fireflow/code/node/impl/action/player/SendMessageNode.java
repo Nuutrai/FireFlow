@@ -20,8 +20,7 @@ public class SendMessageNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
 
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).sendMessage(message.getValue(ctx));
+            player.getValue(ctx).tryUse(ctx, p -> p.sendMessage(message.getValue(ctx)));
             ctx.sendSignal(next);
         });
     }

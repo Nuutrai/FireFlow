@@ -13,6 +13,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.timer.TaskSchedule;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class MonitorCommand extends Command {
 
@@ -55,7 +56,12 @@ public class MonitorCommand extends Command {
                     return TaskSchedule.stop();
                 }
 
-                int percentage = space.evaluator.cpuPercentage;
+                int summary = space.evaluator.processing ? (int) (System.currentTimeMillis() - space.evaluator.tickStart) : 0;
+                LinkedList<Integer> cpuHistory = space.evaluator.cpuHistory;
+                synchronized (cpuHistory) {
+                    for (int e : cpuHistory) summary += e;
+                }
+                int percentage = Math.clamp(summary / 5, 0, 100);
                 TextColor color = TextColor.color(HSVLike.hsvLike(Math.clamp(0.3f - percentage / 300f, 0, 0.3f), 1f, 1f));
 
                 Component display = Component.text(Translations.get("info.cpu_usage")).color(color)

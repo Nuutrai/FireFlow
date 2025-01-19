@@ -14,8 +14,7 @@ public class ClearInventoryNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
 
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).getInventory().clear();
+            player.getValue(ctx).tryUse(ctx, p -> p.getInventory().clear());
             ctx.sendSignal(next);
         });
     }

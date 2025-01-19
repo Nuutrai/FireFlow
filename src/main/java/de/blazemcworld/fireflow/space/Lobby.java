@@ -1,5 +1,6 @@
 package de.blazemcworld.fireflow.space;
 
+import de.blazemcworld.fireflow.inventory.ActiveSpacesInventory;
 import de.blazemcworld.fireflow.inventory.MySpacesInventory;
 import de.blazemcworld.fireflow.util.Statistics;
 import net.kyori.adventure.text.Component;
@@ -38,6 +39,14 @@ public class Lobby {
             )
             .build();
 
+    private static final ItemStack ACTIVE_SPACES = ItemStack.builder(Material.BLAZE_POWDER)
+            .customName(Component.text("Active Spaces").color(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false))
+            .lore(
+                    Component.text("Manage your spaces").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false),
+                    Component.text("using this item.").color(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+            )
+            .build();
+
     public static void init() {
         instance.setTimeRate(0);
         instance.setChunkSupplier(LightingChunk::new);
@@ -69,6 +78,7 @@ public class Lobby {
         events.addListener(PlayerSpawnEvent.class, (event) -> {
             Statistics.reset(event.getPlayer());
             event.getPlayer().getInventory().setItemStack(0, MY_SPACES);
+            event.getPlayer().getInventory().setItemStack(4, ACTIVE_SPACES);
         });
 
         events.addListener(PlayerUseItemEvent.class, (event) -> {
@@ -84,6 +94,9 @@ public class Lobby {
     private static void rightClick(Player player) {
         if (player.getItemInMainHand().isSimilar(MY_SPACES)) {
             MySpacesInventory.open(player);
+        }
+        if (player.getItemInMainHand().isSimilar(ACTIVE_SPACES)) {
+            ActiveSpacesInventory.open(player);
         }
     }
 }

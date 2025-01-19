@@ -12,10 +12,7 @@ public class GetHeldSlotNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Double> slot = new Output<>("slot", NumberType.INSTANCE);
 
-        slot.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getHeldSlot() + 1 : 0.0;
-        });
+        slot.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> (double) p.getHeldSlot(), 0.0));
     }
 
     @Override

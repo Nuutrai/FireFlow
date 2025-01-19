@@ -12,10 +12,7 @@ public class GetPlayerHealthNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Double> health = new Output<>("health", NumberType.INSTANCE);
 
-        health.valueFrom(ctx -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) ? p.get(ctx).getHealth() : 0.0;
-        });
+        health.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> (double) p.getHealth(), 0.0));
     }
 
     @Override

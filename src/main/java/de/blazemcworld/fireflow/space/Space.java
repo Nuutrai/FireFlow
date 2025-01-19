@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 public class Space {
 
     public final SpaceInfo info;
-    public final InstanceContainer play = new SpaceInstance();
+    public final SpaceInstance play = new SpaceInstance();
     public final InstanceContainer code = MinecraftServer.getInstanceManager().createInstanceContainer();
     public final SharedInstance build = MinecraftServer.getInstanceManager().createSharedInstance(play);
     public final CodeEditor editor;

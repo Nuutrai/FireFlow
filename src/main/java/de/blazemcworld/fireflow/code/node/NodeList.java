@@ -11,7 +11,6 @@ import de.blazemcworld.fireflow.code.node.impl.event.player.*;
 import de.blazemcworld.fireflow.code.node.impl.event.space.OnChunkLoadNode;
 import de.blazemcworld.fireflow.code.node.impl.flow.*;
 import de.blazemcworld.fireflow.code.node.impl.info.GetBlockNode;
-import de.blazemcworld.fireflow.code.node.impl.info.RemainingCpuNode;
 import de.blazemcworld.fireflow.code.node.impl.info.player.*;
 import de.blazemcworld.fireflow.code.node.impl.item.CreateItemNode;
 import de.blazemcworld.fireflow.code.node.impl.item.ItemsEqualNode;
@@ -118,7 +117,6 @@ public class NodeList {
                     .add(new PlayerIsFlyingNode())
                     .add(new PlayerListNode())
                     .add(new PlayerMainItemNode())
-                    .add(new RemainingCpuNode())
             )
             .add(new Category("list", Material.BOOKSHELF)
                     .add(new CreateListNode<>(null))

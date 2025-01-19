@@ -4,6 +4,7 @@ import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.ConditionType;
 import de.blazemcworld.fireflow.code.type.PlayerType;
 import de.blazemcworld.fireflow.code.value.PlayerValue;
+import net.minestom.server.entity.Player;
 import net.minestom.server.item.Material;
 
 public class IsPlayerInvulnerableNode extends Node {
@@ -12,10 +13,7 @@ public class IsPlayerInvulnerableNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Boolean> invulnerable = new Output<>("invulnerable", ConditionType.INSTANCE);
 
-        invulnerable.valueFrom((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            return p.available(ctx) && p.get(ctx).isInvulnerable();
-        });
+        invulnerable.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, Player::isInvulnerable, false));
     }
 
     @Override

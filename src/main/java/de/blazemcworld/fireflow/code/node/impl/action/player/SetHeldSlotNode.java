@@ -15,8 +15,7 @@ public class SetHeldSlotNode extends Node {
         Input<Double> slot = new Input<>("slot", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setHeldItemSlot((byte) Math.clamp(slot.getValue(ctx).intValue() - 1, 0, 8));
+            player.getValue(ctx).tryUse(ctx, p -> p.setHeldItemSlot((byte) Math.clamp(slot.getValue(ctx).intValue() - 1, 0, 8)));
             ctx.sendSignal(next);
         });
     }

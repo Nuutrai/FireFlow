@@ -15,8 +15,7 @@ public class SetExperiencePercentageNode extends Node {
         Input<Double> percentage = new Node.Input<>("percentage", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setExp(percentage.getValue(ctx).floatValue() / 100f);
+            player.getValue(ctx).tryUse(ctx, p -> p.setExp(percentage.getValue(ctx).floatValue() / 100f));
             ctx.sendSignal(next);
         });
     }

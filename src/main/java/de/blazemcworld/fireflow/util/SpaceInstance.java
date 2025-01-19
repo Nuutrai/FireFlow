@@ -2,6 +2,7 @@ package de.blazemcworld.fireflow.util;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.CoordConversion;
+import net.minestom.server.entity.Player;
 import net.minestom.server.instance.Chunk;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
@@ -16,6 +17,23 @@ public class SpaceInstance extends InstanceContainer {
     public SpaceInstance() {
         super(UUID.randomUUID(), DimensionType.OVERWORLD);
         MinecraftServer.getInstanceManager().registerInstance(this);
+    }
+
+    @Override
+    public void tick(long time) {
+        for (Player p : getPlayers()) {
+            if (p instanceof CustomPlayer c) {
+                c.serverTick(time);
+            }
+        }
+    }
+
+    public void spaceTick(long time) {
+        super.tick(time);
+
+        for (Player p : getPlayers()) {
+            p.tick(time);
+        }
     }
 
     @Override

@@ -1,14 +1,13 @@
 package de.blazemcworld.fireflow.code.node.impl.flow;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import de.blazemcworld.fireflow.code.CodeThread;
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.NumberType;
 import de.blazemcworld.fireflow.code.type.SignalType;
-import net.minestom.server.MinecraftServer;
 import net.minestom.server.item.Material;
 import net.minestom.server.timer.TaskSchedule;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ScheduleNode extends Node {
 
@@ -24,7 +23,7 @@ public class ScheduleNode extends Node {
         signal.onSignal((ctx) -> {
             AtomicInteger remaining = new AtomicInteger(delay.getValue(ctx).intValue());
 
-            MinecraftServer.getSchedulerManager().submitTask(() -> {
+            ctx.evaluator.scheduler.submitTask(() -> {
                 if (ctx.evaluator.isStopped()) return TaskSchedule.stop();
                 if (remaining.getAndDecrement() <= 0) {
                     CodeThread spawned = ctx.subThread();

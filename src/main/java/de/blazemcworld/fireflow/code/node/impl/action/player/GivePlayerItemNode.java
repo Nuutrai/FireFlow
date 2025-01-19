@@ -19,8 +19,7 @@ public class GivePlayerItemNode extends Node {
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
 
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).getInventory().addItemStack(item.getValue(ctx));
+            player.getValue(ctx).tryUse(ctx, p -> p.getInventory().addItemStack(item.getValue(ctx)));
             ctx.sendSignal(next);
         });
     }

@@ -15,8 +15,7 @@ public class SetPlayerInvulnerableNode extends Node {
         Input<Boolean> state = new Input<>("state", ConditionType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setInvulnerable(state.getValue(ctx));
+            player.getValue(ctx).tryUse(ctx, p -> p.setInvulnerable(state.getValue(ctx)));
             ctx.sendSignal(next);
         });
     }

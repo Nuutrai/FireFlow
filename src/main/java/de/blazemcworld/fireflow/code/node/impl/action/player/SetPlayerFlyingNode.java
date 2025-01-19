@@ -15,8 +15,7 @@ public class SetPlayerFlyingNode extends Node {
         Input<Boolean> flying = new Input<>("flying", ConditionType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
         signal.onSignal((ctx) -> {
-            PlayerValue p = player.getValue(ctx);
-            if (p.available(ctx)) p.get(ctx).setFlying(flying.getValue(ctx));
+            player.getValue(ctx).tryUse(ctx, p -> p.setFlying(flying.getValue(ctx)));
             ctx.sendSignal(next);
         });
     }

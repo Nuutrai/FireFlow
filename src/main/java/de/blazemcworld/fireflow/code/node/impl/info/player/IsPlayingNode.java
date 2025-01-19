@@ -14,7 +14,7 @@ public class IsPlayingNode extends Node {
         Input<PlayerValue> player = new Input<>("player", PlayerType.INSTANCE);
         Output<Boolean> playing = new Output<>("playing", ConditionType.INSTANCE);
 
-        playing.valueFrom((ctx) -> player.getValue(ctx).available(ctx));
+        playing.valueFrom(ctx -> player.getValue(ctx).tryGet(ctx, p -> true, false));
     }
 
     @Override
