@@ -98,4 +98,14 @@ public class ListType<T> extends WireType<ListValue<T>> {
         return new ListValue<>(elementType, values);
     }
 
+    @Override
+    public boolean valuesEqual(ListValue<T> a, ListValue<T> b) {
+        if (a.size() != b.size()) return false;
+        if (a.type != b.type) return false;
+        for (int i = 0; i < a.size(); i++) {
+            if (!elementType.valuesEqual(a.get(i), b.get(i))) return false;
+        }
+        return true;
+    }
+
 }

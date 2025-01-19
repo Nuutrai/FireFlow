@@ -46,6 +46,11 @@ public class StringType extends WireType<String> {
     }
 
     @Override
+    public boolean valuesEqual(String a, String b) {
+        return a.equals(b);
+    }
+
+    @Override
     public boolean canConvert(WireType<?> other) {
         return AllTypes.isValue(other);
     }

@@ -3,10 +3,7 @@ package de.blazemcworld.fireflow.code.node;
 import de.blazemcworld.fireflow.FireFlow;
 import de.blazemcworld.fireflow.code.node.impl.action.CancelEventNode;
 import de.blazemcworld.fireflow.code.node.impl.action.player.*;
-import de.blazemcworld.fireflow.code.node.impl.condition.ConditionAndNode;
-import de.blazemcworld.fireflow.code.node.impl.condition.ConditionOrNode;
-import de.blazemcworld.fireflow.code.node.impl.condition.ConditionalChoiceNode;
-import de.blazemcworld.fireflow.code.node.impl.condition.InvertConditionNode;
+import de.blazemcworld.fireflow.code.node.impl.condition.*;
 import de.blazemcworld.fireflow.code.node.impl.event.player.*;
 import de.blazemcworld.fireflow.code.node.impl.event.space.OnChunkLoadNode;
 import de.blazemcworld.fireflow.code.node.impl.flow.*;
@@ -17,13 +14,14 @@ import de.blazemcworld.fireflow.code.node.impl.item.ItemsEqualNode;
 import de.blazemcworld.fireflow.code.node.impl.item.SetItemCountNode;
 import de.blazemcworld.fireflow.code.node.impl.list.CreateListNode;
 import de.blazemcworld.fireflow.code.node.impl.list.ListAppendNode;
+import de.blazemcworld.fireflow.code.node.impl.list.ListContainsNode;
+import de.blazemcworld.fireflow.code.node.impl.list.ListLengthNode;
 import de.blazemcworld.fireflow.code.node.impl.number.*;
 import de.blazemcworld.fireflow.code.node.impl.position.FacingVectorNode;
 import de.blazemcworld.fireflow.code.node.impl.position.PackPositionNode;
 import de.blazemcworld.fireflow.code.node.impl.position.UnpackPositionNode;
 import de.blazemcworld.fireflow.code.node.impl.string.CharacterAtNode;
 import de.blazemcworld.fireflow.code.node.impl.string.StringLengthNode;
-import de.blazemcworld.fireflow.code.node.impl.string.StringsEqualNode;
 import de.blazemcworld.fireflow.code.node.impl.text.FormatToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.text.StringToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.variable.*;
@@ -74,6 +72,7 @@ public class NodeList {
                     .add(new ConditionalChoiceNode<>(null))
                     .add(new ConditionOrNode())
                     .add(new InvertConditionNode())
+                    .add(new ValuesEqualNode<>(null))
             )
             .add(new Category("event", Material.OBSERVER)
                     .add(new OnChunkLoadNode())
@@ -121,6 +120,8 @@ public class NodeList {
             .add(new Category("list", Material.BOOKSHELF)
                     .add(new CreateListNode<>(null))
                     .add(new ListAppendNode<>(null))
+                    .add(new ListContainsNode<>(null))
+                    .add(new ListLengthNode<>(null))
             )
             .add(new Category("number", Material.CLOCK)
                     .add(new Category("noises", Material.GRAY_CONCRETE_POWDER)
@@ -137,7 +138,6 @@ public class NodeList {
                     .add(new MultiplyNumbersNode())
                     .add(new NumberToStringNode())
                     .add(new NumberToTextNode())
-                    .add(new NumbersEqualNode())
                     .add(new ParseNumberNode())
                     .add(new RandomNumberNode())
                     .add(new RoundNumberNode())
@@ -154,7 +154,6 @@ public class NodeList {
             .add(new Category("string", Material.STRING)
                     .add(new CharacterAtNode())
                     .add(new StringLengthNode())
-                    .add(new StringsEqualNode())
             )
             .add(new Category("vector", Material.ARROW)
                     .add(new GetVectorComponentNode())

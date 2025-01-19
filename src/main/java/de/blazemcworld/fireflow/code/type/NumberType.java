@@ -48,4 +48,9 @@ public class NumberType extends WireType<Double> {
     public Double fromJson(JsonElement json) {
         return json.getAsDouble();
     }
+
+    @Override
+    public boolean valuesEqual(Double a, Double b) {
+        return a.equals(b);
+    }
 }

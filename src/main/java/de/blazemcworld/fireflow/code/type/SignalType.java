@@ -35,6 +35,11 @@ public class SignalType extends WireType<Void> {
     }
 
     @Override
+    public boolean valuesEqual(Void a, Void b) {
+        return false;
+    }
+
+    @Override
     protected String stringifyInternal(Void value) {
         return "SIGNAL";
     }

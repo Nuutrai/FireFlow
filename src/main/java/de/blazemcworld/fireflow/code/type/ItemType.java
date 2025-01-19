@@ -43,6 +43,11 @@ public class ItemType extends WireType<ItemStack> {
     }
 
     @Override
+    public boolean valuesEqual(ItemStack a, ItemStack b) {
+        return a.equals(b);
+    }
+
+    @Override
     protected String stringifyInternal(ItemStack value) {
         return value.material().name() + " x" + value.amount();
     }

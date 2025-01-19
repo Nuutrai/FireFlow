@@ -46,6 +46,11 @@ public class VectorType extends WireType<Vec> {
     }
 
     @Override
+    public boolean valuesEqual(Vec a, Vec b) {
+        return a.equals(b);
+    }
+
+    @Override
     protected String stringifyInternal(Vec value) {
         return "<%.2f, %.2f, %.2f>".formatted(
                 value.x(),

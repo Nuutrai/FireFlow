@@ -50,6 +50,11 @@ public class PositionType extends WireType<Pos> {
     }
 
     @Override
+    public boolean valuesEqual(Pos a, Pos b) {
+        return a.equals(b);
+    }
+
+    @Override
     protected String stringifyInternal(Pos value) {
         return "(%.2f, %.2f, %.2f, %.2f, %.2f)".formatted(
                 value.x(),

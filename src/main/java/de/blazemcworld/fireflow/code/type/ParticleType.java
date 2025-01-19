@@ -48,6 +48,11 @@ public class ParticleType extends WireType<Particle> {
     }
 
     @Override
+    public boolean valuesEqual(Particle a, Particle b) {
+        return a.equals(b);
+    }
+
+    @Override
     protected String stringifyInternal(Particle value) {
         return value.namespace().path();
     }

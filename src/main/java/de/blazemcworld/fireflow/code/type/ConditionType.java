@@ -46,4 +46,9 @@ public class ConditionType extends WireType<Boolean> {
     public Boolean fromJson(JsonElement json) {
         return json.getAsBoolean();
     }
+
+    @Override
+    public boolean valuesEqual(Boolean a, Boolean b) {
+        return a.equals(b);
+    }
 }

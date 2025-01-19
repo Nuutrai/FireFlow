@@ -40,6 +40,11 @@ public class PlayerType extends WireType<PlayerValue> {
     }
 
     @Override
+    public boolean valuesEqual(PlayerValue a, PlayerValue b) {
+        return a.uuid.equals(b.uuid);
+    }
+
+    @Override
     protected String stringifyInternal(PlayerValue value) {
         Player p = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(value.uuid);
         return p == null ? value.uuid.toString() : p.getUsername() + " (" + value.uuid + ")";

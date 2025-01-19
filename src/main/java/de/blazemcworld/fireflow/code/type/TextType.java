@@ -64,6 +64,11 @@ public class TextType extends WireType<Component> {
     }
 
     @Override
+    public boolean valuesEqual(Component a, Component b) {
+        return a.equals(b);
+    }
+
+    @Override
     public boolean canConvert(WireType<?> other) {
         return AllTypes.isValue(other);
     }

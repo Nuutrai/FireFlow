@@ -23,6 +23,7 @@ public abstract class WireType<T> {
     public abstract T checkType(Object obj);
     public abstract JsonElement toJson(T obj);
     public abstract T fromJson(JsonElement json);
+    public abstract boolean valuesEqual(T a, T b);
 
     public JsonElement convertToJson(Object obj) {
         return toJson(checkType(obj));
