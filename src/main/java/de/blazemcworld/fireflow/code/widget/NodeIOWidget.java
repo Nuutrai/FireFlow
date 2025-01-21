@@ -88,6 +88,11 @@ public class NodeIOWidget implements Widget {
             }
         }
         if (i.type() == Interaction.Type.RIGHT_CLICK) {
+            if (!connections.isEmpty()) {
+                if (isInput != (type == SignalType.INSTANCE)) {
+                    return true;
+                }
+            }
             if (!this.isInput()) i.editor().setAction(i.player(), new WireAction(this, i.editor(), i.player()));
             return true;
         }

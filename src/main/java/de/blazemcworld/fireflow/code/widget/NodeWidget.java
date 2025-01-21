@@ -35,12 +35,14 @@ public class NodeWidget implements Widget {
         main.align = VerticalContainerWidget.Align.CENTER;
         HorizontalContainerWidget title = new HorizontalContainerWidget(new ItemWidget(node.icon), new TextWidget(Component.text(node.getTitle())));
 
-        ButtonWidget helpButton = new ButtonWidget(Component.text(" ?").color(NamedTextColor.GRAY));
-        helpButton.handler = interaction -> {
-            interaction.player().sendMessage(node.getIngameDescription().color(NamedTextColor.WHITE));
-            return true;
-        };
-        title.widgets.add(helpButton);
+        if (!(node instanceof FunctionInputsNode || node instanceof FunctionOutputsNode || node instanceof FunctionCallNode)) {
+            ButtonWidget helpButton = new ButtonWidget(Component.text(" ?").color(NamedTextColor.GRAY));
+            helpButton.handler = interaction -> {
+                interaction.player().sendMessage(node.getIngameDescription().color(NamedTextColor.WHITE));
+                return true;
+            };
+            title.widgets.add(helpButton);
+        }
 
         main.widgets.add(title);
 

@@ -12,16 +12,15 @@ import de.blazemcworld.fireflow.code.node.impl.info.player.*;
 import de.blazemcworld.fireflow.code.node.impl.item.CreateItemNode;
 import de.blazemcworld.fireflow.code.node.impl.item.ItemsEqualNode;
 import de.blazemcworld.fireflow.code.node.impl.item.SetItemCountNode;
-import de.blazemcworld.fireflow.code.node.impl.list.CreateListNode;
-import de.blazemcworld.fireflow.code.node.impl.list.ListAppendNode;
-import de.blazemcworld.fireflow.code.node.impl.list.ListContainsNode;
-import de.blazemcworld.fireflow.code.node.impl.list.ListLengthNode;
+import de.blazemcworld.fireflow.code.node.impl.list.*;
 import de.blazemcworld.fireflow.code.node.impl.number.*;
 import de.blazemcworld.fireflow.code.node.impl.position.FacingVectorNode;
 import de.blazemcworld.fireflow.code.node.impl.position.PackPositionNode;
 import de.blazemcworld.fireflow.code.node.impl.position.UnpackPositionNode;
 import de.blazemcworld.fireflow.code.node.impl.string.CharacterAtNode;
+import de.blazemcworld.fireflow.code.node.impl.string.CombineStringsNode;
 import de.blazemcworld.fireflow.code.node.impl.string.StringLengthNode;
+import de.blazemcworld.fireflow.code.node.impl.text.CombineTextsNode;
 import de.blazemcworld.fireflow.code.node.impl.text.FormatToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.text.StringToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.variable.*;
@@ -44,26 +43,28 @@ public class NodeList {
         root = new Category("root", null)
             .add(new Category("action", Material.REDSTONE)
                     .add(new Category("player", Material.PLAYER_HEAD)
-                        .add(new ClearInventoryNode())
-                        .add(new GivePlayerItemNode())
-                        .add(new KillPlayerNode())
-                        .add(new RespawnPlayerNode())
-                        .add(new SendMessageNode())
-                        .add(new SendParticleNode())
-                        .add(new SendTitleNode())
-                        .add(new SetAllowFlyingNode())
-                        .add(new SetExperienceLevelNode())
-                        .add(new SetExperiencePercentageNode())
-                        .add(new SetGamemodeNode())
-                        .add(new SetHeldSlotNode())
-                        .add(new SetPlayerFlyingNode())
-                        .add(new SetPlayerFoodNode())
-                        .add(new SetPlayerHealthNode())
-                        .add(new SetPlayerInvulnerableNode())
-                        .add(new SetPlayerSaturationNode())
-                        .add(new SetPlayerVelocityNode())
-                        .add(new TeleportPlayerNode())
-                        .add(new SendBlockChangeNode())
+                            .add(new ClearInventoryNode())
+                            .add(new GivePlayerItemNode())
+                            .add(new KillPlayerNode())
+                            .add(new PlayerAnimationNode())
+                            .add(new RespawnPlayerNode())
+                            .add(new SendActionbarNode())
+                            .add(new SendBlockChangeNode())
+                            .add(new SendMessageNode())
+                            .add(new SendParticleNode())
+                            .add(new SendTitleNode())
+                            .add(new SetAllowFlyingNode())
+                            .add(new SetExperienceLevelNode())
+                            .add(new SetExperiencePercentageNode())
+                            .add(new SetGamemodeNode())
+                            .add(new SetHeldSlotNode())
+                            .add(new SetPlayerFlyingNode())
+                            .add(new SetPlayerFoodNode())
+                            .add(new SetPlayerHealthNode())
+                            .add(new SetPlayerInvulnerableNode())
+                            .add(new SetPlayerSaturationNode())
+                            .add(new SetPlayerVelocityNode())
+                            .add(new TeleportPlayerNode())
                     )
                     .add(new CancelEventNode())
             )
@@ -76,6 +77,7 @@ public class NodeList {
             )
             .add(new Category("event", Material.OBSERVER)
                     .add(new OnChunkLoadNode())
+                    .add(new OnPlayerAttackPlayerNode())
                     .add(new OnPlayerChatNode())
                     .add(new OnPlayerJoinNode())
                     .add(new OnPlayerStartFlyingNode())
@@ -119,9 +121,11 @@ public class NodeList {
             )
             .add(new Category("list", Material.BOOKSHELF)
                     .add(new CreateListNode<>(null))
+                    .add(new GetListIndexNode<>(null))
                     .add(new ListAppendNode<>(null))
                     .add(new ListContainsNode<>(null))
                     .add(new ListLengthNode<>(null))
+                    .add(new RemoveListIndexNode<>(null))
             )
             .add(new Category("number", Material.CLOCK)
                     .add(new Category("noises", Material.GRAY_CONCRETE_POWDER)
@@ -153,6 +157,7 @@ public class NodeList {
             )
             .add(new Category("string", Material.STRING)
                     .add(new CharacterAtNode())
+                    .add(new CombineStringsNode())
                     .add(new StringLengthNode())
             )
             .add(new Category("vector", Material.ARROW)
@@ -163,6 +168,7 @@ public class NodeList {
                     .add(new UnpackVectorNode())
             )
             .add(new Category("text", Material.WRITABLE_BOOK)
+                    .add(new CombineTextsNode())
                     .add(new FormatToTextNode())
                     .add(new StringToTextNode())
             )

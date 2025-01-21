@@ -19,12 +19,14 @@ public class CopySelectionAction implements Action {
 
     public CopySelectionAction(List<Widget> widgetList, Vec offset, CodeEditor editor) {
         this.offset = offset;
-        List<Widget> widgets = new ArrayList<>(widgetList.stream().filter(widget -> !(widget instanceof NodeWidget) || (!(((NodeWidget) widget).node instanceof FunctionInputsNode) && !(((NodeWidget) widget).node instanceof FunctionOutputsNode))).toList());
-        widgets.sort((w1, w2) -> {
-            if (w1 instanceof WireWidget && w2 instanceof NodeWidget) return -1;
-            if (w2 instanceof WireWidget && w1 instanceof NodeWidget) return 1;
-            return 0;
-        });
+        List<Widget> widgets = new ArrayList<>(widgetList.stream().filter(widget -> {
+            if (widget instanceof NodeWidget n) {
+                if (n.node instanceof FunctionInputsNode) return false;
+                if (n.node instanceof FunctionOutputsNode) return false;
+                return true;
+            }
+            return false;
+        }).toList());
 
         HashMap<NodeWidget, NodeWidget> oldToNewNodes = new HashMap<>();
         HashMap<WireWidget, WireWidget> oldToNewWires = new HashMap<>();
@@ -124,10 +126,7 @@ public class CopySelectionAction implements Action {
     @Override
     public void tick(Vec cursor, CodeEditor editor, Player player) {
         editor.stopAction(player);
-        if (widgets.isEmpty()) {
-            editor.stopAction(player);
-            return;
-        }
+        if (widgets.isEmpty()) return;
         editor.lockWidgets(widgets, player);
         editor.setAction(player, new DragSelectionAction(widgets, offset, editor, player));
     }
