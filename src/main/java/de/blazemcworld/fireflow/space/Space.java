@@ -7,7 +7,6 @@ import de.blazemcworld.fireflow.code.CodeDebugger;
 import de.blazemcworld.fireflow.code.CodeEditor;
 import de.blazemcworld.fireflow.code.CodeEvaluator;
 import de.blazemcworld.fireflow.code.VariableStore;
-import de.blazemcworld.fireflow.util.ChunkLoadingBlockBatch;
 import de.blazemcworld.fireflow.util.SpaceInstance;
 import de.blazemcworld.fireflow.util.Transfer;
 import de.blazemcworld.fireflow.util.Translations;
@@ -41,7 +40,6 @@ public class Space {
     public final CodeEditor editor;
     public CodeEvaluator evaluator;
     public CodeDebugger debugger;
-    public ChunkLoadingBlockBatch spaceBlockBatch;
     private long emptySince = -1;
     private boolean loaded = true;
     public final VariableStore savedVariables = new VariableStore();
@@ -57,6 +55,8 @@ public class Space {
         code.setTimeRate(0);
         code.setChunkSupplier(LightingChunk::new);
         code.setChunkLoader(IChunkLoader.noop());
+
+        build.setTimeRate(0);
 
         play.setGenerator((unit) -> {
             if (Math.abs(unit.absoluteStart().x() + 8) > 16) return;

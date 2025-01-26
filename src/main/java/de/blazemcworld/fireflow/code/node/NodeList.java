@@ -161,6 +161,7 @@ public class NodeList {
                     .add(new StringLengthNode())
             )
             .add(new Category("vector", Material.ARROW)
+                    .add(new AddVectorsNode())
                     .add(new GetVectorComponentNode())
                     .add(new PackVectorNode())
                     .add(new SetVectorComponentNode())

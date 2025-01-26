@@ -4,7 +4,6 @@ import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.SignalType;
 import de.blazemcworld.fireflow.code.type.StringType;
 import de.blazemcworld.fireflow.code.type.VectorType;
-import de.blazemcworld.fireflow.util.ChunkLoadingBlockBatch;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
@@ -19,19 +18,7 @@ public class SetBlockNode extends Node {
         signal.onSignal((ctx) -> {
             Block placedBlock = Block.fromNamespaceId(block.getValue(ctx));
             if (placedBlock != null) {
-                synchronized (ctx.evaluator.space) {
-                    if (ctx.evaluator.space.spaceBlockBatch == null) {
-                        ctx.evaluator.space.spaceBlockBatch = new ChunkLoadingBlockBatch();
-
-                        ctx.evaluator.scheduler.scheduleNextTick(() -> {
-                            synchronized (ctx.evaluator.space) {
-                                ctx.evaluator.space.spaceBlockBatch.apply(ctx.evaluator.space.play, null);
-                                ctx.evaluator.space.spaceBlockBatch = null;
-                            }
-                        });
-                    }
-                    ctx.evaluator.space.spaceBlockBatch.setBlock(position.getValue(ctx), placedBlock);
-                }
+                ctx.evaluator.space.play.setBlock(position.getValue(ctx), placedBlock);
             }
             ctx.sendSignal(next);
         });

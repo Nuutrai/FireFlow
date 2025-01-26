@@ -16,7 +16,7 @@ public class GetListIndexNode<T> extends Node {
     private final WireType<T> type;
 
     public GetListIndexNode(WireType<T> type) {
-        super("get_list_index", Material.TNT);
+        super("get_list_index", Material.HOPPER);
         this.type = type;
 
         Input<ListValue<T>> list = new Input<>("list", ListType.of(type));

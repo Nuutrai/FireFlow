@@ -10,7 +10,6 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.batch.AbsoluteBlockBatch;
 import net.minestom.server.instance.block.Block;
 import net.minestom.server.item.Material;
-import net.minestom.server.timer.TaskSchedule;
 
 public class SetRegionNode extends Node {
     public SetRegionNode() {
@@ -43,10 +42,8 @@ public class SetRegionNode extends Node {
 
                     if (ctx.evaluator.space.play.getChunk(chunk[0], chunk[1]) == null) {
                         ctx.evaluator.space.play.loadChunk(chunk[0], chunk[1]).thenRun(() -> {
-                            ctx.evaluator.scheduler.scheduleNextTick(() -> {
-                                worker.submit(step[0]);
-                                worker.resume();
-                            });
+                            worker.submit(step[0]);
+                            worker.resume();
                         });
                         return;
                     }
@@ -66,23 +63,20 @@ public class SetRegionNode extends Node {
                     }
 
                     batch.apply(ctx.evaluator.space.play, () -> {
-                        ctx.evaluator.scheduler.scheduleTask(() -> {
-                            if (ctx.evaluator.isStopped()) return TaskSchedule.stop();
-                            chunk[0]++;
-                            if (chunk[0] > max.chunkX()) {
-                                chunk[0] = min.chunkX();
-                                chunk[1]++;
-                                if (chunk[1] > max.chunkZ()) {
-                                    worker.sendSignal(then);
-                                    worker.resume();
-                                    return TaskSchedule.stop();
-                                }
+                        if (ctx.evaluator.isStopped()) return;
+                        chunk[0]++;
+                        if (chunk[0] > max.chunkX()) {
+                            chunk[0] = min.chunkX();
+                            chunk[1]++;
+                            if (chunk[1] > max.chunkZ()) {
+                                worker.sendSignal(then);
+                                worker.resume();
+                                return;
                             }
+                        }
 
-                            worker.submit(step[0]);
-                            worker.resume();
-                            return TaskSchedule.stop();
-                        }, TaskSchedule.nextTick());
+                        worker.submit(step[0]);
+                        worker.resume();
                     });
                 };
 
