@@ -1,28 +1,26 @@
 package de.blazemcworld.fireflow.code.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-
 import de.blazemcworld.fireflow.code.CodeEditor;
 import de.blazemcworld.fireflow.code.Interaction;
 import de.blazemcworld.fireflow.code.type.AllTypes;
 import de.blazemcworld.fireflow.code.type.WireType;
-import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class TypeSelectorWidget implements Widget {
 
-    private final BorderWidget<VerticalContainerWidget> container = new BorderWidget<>(new VerticalContainerWidget());
+    private final BorderWidget<GridWidget> container = new BorderWidget<>(new GridWidget(5));
 
     public TypeSelectorWidget(List<WireType<?>> options, Consumer<WireType<?>> callback) {
-        container.backgroundColor(0x99000011);
         for (WireType<?> type : options) {
-            ButtonWidget button = new ButtonWidget(
-                new ItemWidget(type.icon),
-                new TextWidget(Component.text(type.getName()))
-            );
+            ButtonWidget button = new ButtonWidget(new IconWidget(
+                ItemStack.of(type.icon), type.getName(), 0.652
+            ));
             button.handler = interaction -> {
                 if (interaction.type() != Interaction.Type.RIGHT_CLICK) return false;
                 if (type.getTypeCount() == 0) {
@@ -36,6 +34,7 @@ public class TypeSelectorWidget implements Widget {
             };
             container.inner.widgets.add(button);
         }
+        container.backgroundColor(0x99000011);
     }
 
     private static void selectSubtypes(WireType<?> type, Vec pos, CodeEditor editor, List<WireType<?>> done, Consumer<WireType<?>> callback) {

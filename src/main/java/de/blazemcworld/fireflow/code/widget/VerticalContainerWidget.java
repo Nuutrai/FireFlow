@@ -1,11 +1,11 @@
 package de.blazemcworld.fireflow.code.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.blazemcworld.fireflow.code.Interaction;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.InstanceContainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class VerticalContainerWidget implements Widget {
 

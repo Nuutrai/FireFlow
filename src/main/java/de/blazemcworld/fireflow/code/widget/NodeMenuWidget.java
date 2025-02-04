@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.instance.InstanceContainer;
+import net.minestom.server.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ public class NodeMenuWidget implements Widget {
     private Widget root;
 
     public NodeMenuWidget(NodeList.Category category, CodeEditor editor, List<NodeList.Category> parents) {
-        VerticalContainerWidget list = new VerticalContainerWidget();
+        VerticalContainerWidget menu = new VerticalContainerWidget();
 
         if (parents != null && !parents.isEmpty()) {
             NodeList.Category parent = parents.get(parents.size() - 1);
@@ -39,8 +40,11 @@ public class NodeMenuWidget implements Widget {
                 return true;
             };
 
-            list.widgets.add(button);
+            menu.widgets.add(button);
         }
+
+        GridWidget grid = new GridWidget(5);
+        menu.widgets.add(grid);
 
         boolean emptyCategory = true;
         for (NodeList.Category subCategory : category.categories) {
@@ -57,7 +61,7 @@ public class NodeMenuWidget implements Widget {
                 if (!hasEntry) continue;
             }
 
-            ButtonWidget button = new ButtonWidget(new ItemWidget(subCategory.icon), new TextWidget(Component.text(subCategory.name)));
+            ButtonWidget button = new ButtonWidget(new IconWidget(ItemStack.of(subCategory.icon), subCategory.name, 0.652));
 
             button.handler = interaction -> {
                 if (interaction.type() != Interaction.Type.RIGHT_CLICK) return false;
@@ -74,7 +78,7 @@ public class NodeMenuWidget implements Widget {
                 return true;
             };
 
-            list.widgets.add(button);
+            grid.widgets.add(button);
             emptyCategory = false;
         }
 
@@ -89,7 +93,7 @@ public class NodeMenuWidget implements Widget {
         }
 
         for (Node node : nodes) {
-            ButtonWidget button = new ButtonWidget(new ItemWidget(node.icon), new TextWidget(Component.text(node.getTitle())));
+            ButtonWidget button = new ButtonWidget(new IconWidget(ItemStack.of(node.icon), node.getTitle(), 0.652));
 
             button.handler = interaction -> {
                 if (interaction.type() != Interaction.Type.RIGHT_CLICK) return false;
@@ -100,15 +104,16 @@ public class NodeMenuWidget implements Widget {
                 return true;
             };
 
-            list.widgets.add(button);
+            grid.widgets.add(button);
             emptyCategory = false;
         }
 
         if (emptyCategory) {
-            list.widgets.add(new TextWidget(Component.text("Empty category")));
+            menu.widgets.remove(grid);
+            menu.widgets.add(new TextWidget(Component.text("Empty category")));
         }
 
-        BorderWidget<VerticalContainerWidget> border = new BorderWidget<>(list);
+        BorderWidget<VerticalContainerWidget> border = new BorderWidget<>(menu);
         border.backgroundColor(0x99000011);
         ButtonWidget button = new ButtonWidget(border);
 
@@ -141,7 +146,7 @@ public class NodeMenuWidget implements Widget {
                 types.add(type);
                 createNode(e, pos, node.copyWithTypes(types), types);
             });
-            selector.setPos(pos);
+            selector.setPos(pos.add(selector.getSize().mul(4).apply(Vec.Operator.CEIL).div(8)));
             selector.update(e.space.code);
             e.rootWidgets.add(selector);
             return;

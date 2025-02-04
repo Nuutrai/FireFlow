@@ -1,7 +1,5 @@
 package de.blazemcworld.fireflow.code.widget;
 
-import java.util.List;
-
 import de.blazemcworld.fireflow.code.Interaction;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
@@ -12,13 +10,17 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 
+import java.util.List;
+
 public class ItemWidget implements Widget {
     
     private final Entity display = new Entity(EntityType.ITEM_DISPLAY);
     private final ItemDisplayMeta meta = (ItemDisplayMeta) display.getEntityMeta();
-    private Vec pos = Vec.ZERO;    
+    private Vec pos = Vec.ZERO;
+    private final double size;
 
     public ItemWidget(ItemStack stack, double size) {
+        this.size = size;
         meta.setItemStack(stack);
         meta.setTransformationInterpolationDuration(1);
         meta.setPosRotInterpolationDuration(1);
@@ -48,12 +50,12 @@ public class ItemWidget implements Widget {
 
     @Override
     public Vec getSize() {
-        return new Vec(0.25, 0.25, 0);
+        return new Vec(size, size, 0);
     }
 
     @Override
     public void update(InstanceContainer inst) {
-        display.setInstance(inst, pos.asPosition());
+        display.setInstance(inst, pos.asPosition().withZ(15.995));
     }
 
     @Override

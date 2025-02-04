@@ -130,7 +130,11 @@ public class WireWidget implements Widget {
             }
             TextWidget arrow = arrows.get(i);
 
-            Vec pos = new Vec((horizontal) ? (Math.min(line.from.x(), line.to.x()) + (lineLength / (arrowCount + 1)) * (i+1)) : line.from.x() + ((line.from.y() < line.to.y()) ? 0.25/-4.15 : 0.25/1.19), ((!horizontal) ? (Math.min(line.from.y(), line.to.y()) + (lineLength / (arrowCount + 1)) * (i+1)) : line.from.y()) + ((line.from.x() > line.to.x()) ? 0.25/1.98 : 0.25*1.585), 15.999);
+            Vec pos = new Vec(
+                    horizontal ? (Math.min(line.from.x(), line.to.x()) + (lineLength / (arrowCount + 1)) * (i+1)) : line.from.x() + ((line.from.y() < line.to.y()) ? -0.023 : 0.24775),
+                    (!horizontal ? (Math.min(line.from.y(), line.to.y()) + (lineLength / (arrowCount + 1)) * (i+1)) : line.from.y()) + ((line.from.x() > line.to.x()) ? 0.25/1.98 : 0.25*1.585),
+                    15.999
+            );
             arrow.setPos(pos);
 
             if (!horizontal) {

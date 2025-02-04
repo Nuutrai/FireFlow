@@ -51,7 +51,7 @@ public class MySpacesInventory {
             res.setCancel(true);
             if (p != player) return;
 
-            if (slot < spaces.size()) {
+            if (slot < spaces.size() && slot >= 0) {
                 Transfer.move(player, SpaceManager.getOrLoadSpace(spaces.get(slot)).play);
                 return;
             }

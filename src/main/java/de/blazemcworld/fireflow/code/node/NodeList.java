@@ -9,9 +9,7 @@ import de.blazemcworld.fireflow.code.node.impl.event.space.OnChunkLoadNode;
 import de.blazemcworld.fireflow.code.node.impl.flow.*;
 import de.blazemcworld.fireflow.code.node.impl.info.GetBlockNode;
 import de.blazemcworld.fireflow.code.node.impl.info.player.*;
-import de.blazemcworld.fireflow.code.node.impl.item.CreateItemNode;
-import de.blazemcworld.fireflow.code.node.impl.item.ItemsEqualNode;
-import de.blazemcworld.fireflow.code.node.impl.item.SetItemCountNode;
+import de.blazemcworld.fireflow.code.node.impl.item.*;
 import de.blazemcworld.fireflow.code.node.impl.list.*;
 import de.blazemcworld.fireflow.code.node.impl.number.*;
 import de.blazemcworld.fireflow.code.node.impl.position.FacingVectorNode;
@@ -99,9 +97,11 @@ public class NodeList {
                     .add(new WhileNode())
             )
             .add(new Category("item", Material.ITEM_FRAME)
-                    .add(new CreateItemNode())
                     .add(new ItemsEqualNode())
                     .add(new SetItemCountNode())
+                    .add(new SetItemLoreNode())
+                    .add(new SetItemMaterialNode())
+                    .add(new SetItemNameNode())
             )
             .add(new Category("info", Material.ENDER_EYE)
                     .add(new GetBlockNode())

@@ -48,6 +48,12 @@ public class ItemType extends WireType<ItemStack> {
     }
 
     @Override
+    public ItemStack parseInset(String str) {
+        Material mat = Material.fromNamespaceId(str);
+        return ItemStack.of(mat != null ? mat : Material.AIR);
+    }
+
+    @Override
     protected String stringifyInternal(ItemStack value) {
         return value.material().name() + " x" + value.amount();
     }

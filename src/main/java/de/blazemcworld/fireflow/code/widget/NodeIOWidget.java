@@ -31,7 +31,7 @@ public class NodeIOWidget implements Widget {
         this.input = null;
         this.parent = parent;
         text = new TextWidget(displayText());
-        text.shiftLeft = true;
+        text.shiftRight = true;
     }
 
     public NodeIOWidget(NodeWidget parent, Node.Input<?> input) {

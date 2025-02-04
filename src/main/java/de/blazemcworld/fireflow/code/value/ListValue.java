@@ -1,9 +1,10 @@
 package de.blazemcworld.fireflow.code.value;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.blazemcworld.fireflow.code.type.WireType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ListValue<T> {
     
@@ -55,6 +56,10 @@ public class ListValue<T> {
         List<T> newStore = new ArrayList<>(store);
         newStore.add(index, value);
         return new ListValue<>(type, newStore);
+    }
+
+    public List<T> view() {
+        return Collections.unmodifiableList(store);
     }
 
 }
