@@ -51,12 +51,12 @@ public class StringType extends WireType<String> {
     }
 
     @Override
-    public boolean canConvert(WireType<?> other) {
+    protected boolean canConvertInternal(WireType<?> other) {
         return AllTypes.isValue(other);
     }
 
     @Override
-    public String convert(WireType<?> other, Object v) {
+    protected String convertInternal(WireType<?> other, Object v) {
         return other.stringify(v);
     }
 }

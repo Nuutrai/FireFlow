@@ -66,15 +66,15 @@ public class PositionType extends WireType<Pos> {
     }
 
     @Override
-    public boolean canConvert(WireType<?> other) {
+    protected boolean canConvertInternal(WireType<?> other) {
         return other == VectorType.INSTANCE;
     }
 
     @Override
-    public Pos convert(WireType<?> other, Object v) {
+    protected Pos convertInternal(WireType<?> other, Object v) {
         if (other == VectorType.INSTANCE && v instanceof Vec vec) {
             return vec.asPosition();
         }
-        return super.convert(other, v);
+        return super.convertInternal(other, v);
     }
 }

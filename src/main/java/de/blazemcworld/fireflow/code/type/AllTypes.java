@@ -13,6 +13,7 @@ public class AllTypes {
     public static final List<WireType<?>> all = new ArrayList<>();
 
     public static void init() {
+        all.add(AnyType.INSTANCE);
         all.add(ConditionType.INSTANCE);
         all.add(ItemType.INSTANCE);
         all.add(ListType.UNSPECIFIED);

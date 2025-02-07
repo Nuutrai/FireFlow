@@ -60,15 +60,15 @@ public class VectorType extends WireType<Vec> {
     }
 
     @Override
-    public boolean canConvert(WireType<?> other) {
+    protected boolean canConvertInternal(WireType<?> other) {
         return other == PositionType.INSTANCE;
     }
 
     @Override
-    public Vec convert(WireType<?> other, Object v) {
+    protected Vec convertInternal(WireType<?> other, Object v) {
         if (other == PositionType.INSTANCE && v instanceof Pos pos) {
             return pos.asVec();
         }
-        return super.convert(other, v);
+        return super.convertInternal(other, v);
     }
 }

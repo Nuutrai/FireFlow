@@ -1,6 +1,7 @@
 package de.blazemcworld.fireflow.code.type;
 
 import com.google.gson.JsonElement;
+import de.blazemcworld.fireflow.code.value.AnyValue;
 import de.blazemcworld.fireflow.util.Translations;
 import net.kyori.adventure.text.format.TextColor;
 import net.minestom.server.item.Material;
@@ -60,11 +61,25 @@ public abstract class WireType<T> {
     protected abstract String stringifyInternal(T value);
 
     public T convert(WireType<?> other, Object v) {
+        if (other == AnyType.INSTANCE) {
+            AnyValue<?> any = (AnyValue<?>) v;
+            other = any.type();
+            v = any.value();
+        }
+        return convertInternal(other, v);
+    }
+
+    protected T convertInternal(WireType<?> other, Object v) {
         T checked = checkType(v);
         return checked != null ? checked : defaultValue();
     }
 
     public boolean canConvert(WireType<?> other) {
-        return false;
+        if (other == AnyType.INSTANCE) return true;
+        return canConvertInternal(other);
+    }
+
+    protected boolean canConvertInternal(WireType<?> other) {
+        return other == AnyType.INSTANCE;
     }
 }

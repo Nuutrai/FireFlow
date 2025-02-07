@@ -69,12 +69,12 @@ public class TextType extends WireType<Component> {
     }
 
     @Override
-    public boolean canConvert(WireType<?> other) {
+    protected boolean canConvertInternal(WireType<?> other) {
         return AllTypes.isValue(other);
     }
 
     @Override
-    public Component convert(WireType<?> other, Object v) {
+    protected Component convertInternal(WireType<?> other, Object v) {
         return Component.text(other.stringify(v));
     }
 }
