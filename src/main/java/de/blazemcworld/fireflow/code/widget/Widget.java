@@ -26,4 +26,8 @@ public interface Widget {
         if (!inBounds(pos)) return null;
         return this;
     }
+
+    default int interactionPriority() {
+        return 0;
+    }
 }

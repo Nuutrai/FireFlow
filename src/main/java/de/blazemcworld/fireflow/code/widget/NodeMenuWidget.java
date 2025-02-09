@@ -8,6 +8,7 @@ import de.blazemcworld.fireflow.code.node.impl.function.FunctionCallNode;
 import de.blazemcworld.fireflow.code.node.impl.function.FunctionDefinition;
 import de.blazemcworld.fireflow.code.type.AllTypes;
 import de.blazemcworld.fireflow.code.type.WireType;
+import it.unimi.dsi.fastutil.Pair;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Vec;
@@ -15,11 +16,14 @@ import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.item.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class NodeMenuWidget implements Widget {
 
     private Widget root;
+    public NodeIOWidget ioOrigin;
 
     public NodeMenuWidget(NodeList.Category category, CodeEditor editor, List<NodeList.Category> parents) {
         VerticalContainerWidget menu = new VerticalContainerWidget();
@@ -36,6 +40,7 @@ public class NodeMenuWidget implements Widget {
                 NodeMenuWidget n = new NodeMenuWidget(parent, interaction.editor(), parents.subList(0, parents.size() - 1));
                 n.setPos(root.getPos());
                 n.update(interaction.editor().space.code);
+                n.ioOrigin = ioOrigin;
                 interaction.editor().rootWidgets.add(n);
                 return true;
             };
@@ -74,6 +79,7 @@ public class NodeMenuWidget implements Widget {
                 NodeMenuWidget n = new NodeMenuWidget(subCategory, interaction.editor(), path);
                 n.setPos(root.getPos());
                 n.update(interaction.editor().space.code);
+                n.ioOrigin = ioOrigin;
                 interaction.editor().rootWidgets.add(n);
                 return true;
             };
@@ -100,7 +106,7 @@ public class NodeMenuWidget implements Widget {
                 remove();
                 interaction.editor().rootWidgets.remove(this);
 
-                createNode(interaction.editor(), interaction.pos(), node, new ArrayList<>());
+                createNode(interaction.editor(), interaction.pos(), node, new ArrayList<>(), ioOrigin);
                 return true;
             };
 
@@ -114,7 +120,7 @@ public class NodeMenuWidget implements Widget {
         }
 
         BorderWidget<VerticalContainerWidget> border = new BorderWidget<>(menu);
-        border.backgroundColor(0x99000011);
+        border.backgroundColor(0xdd000011);
         ButtonWidget button = new ButtonWidget(border);
 
         button.handler = interaction -> {
@@ -129,7 +135,7 @@ public class NodeMenuWidget implements Widget {
         root = button;
     }
 
-    public static void createNode(CodeEditor e, Vec pos, Node node, List<WireType<?>> types) {
+    public static void createNode(CodeEditor e, Vec pos, Node node, List<WireType<?>> types, NodeIOWidget ioOrigin) {
         if (node instanceof FunctionCallNode call) {
             if (!e.functions.containsKey(call.function.name)) return;
             if (e.functions.get(call.function.name) != call.function) return;
@@ -144,7 +150,7 @@ public class NodeMenuWidget implements Widget {
 
             TypeSelectorWidget selector = new TypeSelectorWidget(filtered, type -> {
                 types.add(type);
-                createNode(e, pos, node.copyWithTypes(types), types);
+                createNode(e, pos, node.copyWithTypes(types), types, ioOrigin);
             });
             selector.setPos(pos.add(selector.getSize().mul(4).apply(Vec.Operator.CEIL).div(8)));
             selector.update(e.space.code);
@@ -160,14 +166,130 @@ public class NodeMenuWidget implements Widget {
         }
 
         Vec s = n.getSize();
-        n.setPos(pos.add(Math.round(s.x() * 4) / 8f, Math.round(s.y() * 4) / 8f, 0));
+        if (ioOrigin == null || !ioOrigin.parent.getIOWidgets().contains(ioOrigin) || !e.rootWidgets.contains(ioOrigin.parent)) {
+            n.setPos(pos.add(Math.round(s.x() * 4) / 8f, Math.round(s.y() * 4) / 8f, 0));
+        } else {
+            if (ioOrigin.isInput()) {
+                n.setPos(ioOrigin.getPos().add(0.5 + s.x(), 0, 0));
+            } else {
+                n.setPos(ioOrigin.getPos().sub(ioOrigin.getSize().x() + 0.5, 0, 0));
+            }
+
+            n.update(e.space.code);
+            Pair<Node.Input<?>, Node.Output<?>> compatible = getCompatible(n.node, ioOrigin);
+            if (compatible != null) {
+                if (compatible.first() != null && !ioOrigin.isInput()) {
+                    for (NodeIOWidget io : n.getInputs()) {
+                        if (io.input != compatible.first()) continue;
+                        double yDiff = io.getPos().y() - ioOrigin.getPos().y();
+                        n.setPos(n.getPos().sub(0, yDiff, 0));
+                        resolveOverlap(e, n);
+                        n.update(e.space.code);
+                        pair(io, ioOrigin, e);
+                        break;
+                    }
+                } else if (compatible.second() != null && ioOrigin.isInput()) {
+                    for (NodeIOWidget io : n.getOutputs()) {
+                        if (io.output != compatible.second()) continue;
+                        double yDiff = io.getPos().y() - ioOrigin.getPos().y();
+                        n.setPos(n.getPos().sub(0, yDiff, 0));
+                        resolveOverlap(e, n);
+                        n.update(e.space.code);
+                        pair(ioOrigin, io, e);
+                        break;
+                    }
+                }
+            }
+        }
         n.update(e.space.code);
         e.rootWidgets.add(n);
     }
 
+    public static Pair<Node.Input<?>, Node.Output<?>> getCompatible(Node node, NodeIOWidget io) {
+        Pair<Node.Input<?>, Node.Output<?>> compatible = null;
+        if (io.isInput()) {
+            for (Node.Output<?> out : node.outputs) {
+                if (io.input.type == out.type) return Pair.of(null, out);
+                if (isCompatible(io.input, out)) compatible = Pair.of(null, out);
+            }
+        } else {
+            for (Node.Input<?> in : node.inputs) {
+                if (io.output.type == in.type) return Pair.of(in, null);
+                if (isCompatible(in, io.output)) compatible = Pair.of(in, null);
+            }
+        }
+        return compatible;
+    }
+
+    private static void pair(NodeIOWidget input, NodeIOWidget output, CodeEditor editor) {
+        Vec start = output.getPos().sub(output.getSize().sub(0, 1 / 8f, 0));
+        Vec end = input.getPos().add(-1 / 8f, -1 / 8f, 0);
+
+        List<WireWidget> wires = new ArrayList<>();
+        List<Vec> path = editor.pathfinder.findPath(start.sub(0.25, 0, 0), end.add(0.25, 0, 0));
+        path.addFirst(start);
+        path.add(end);
+
+        for (int i = 0; i < path.size() - 1; i++) {
+            wires.add(new WireWidget(path.get(i).withZ(15.999), output.type(), path.get(i + 1).withZ(15.999)));
+        }
+
+        for (int i = 1; i < wires.size(); i++) {
+            wires.get(i - 1).connectNext(wires.get(i));
+        }
+        wires.getFirst().connectPrevious(output);
+        wires.getLast().connectNext(input);
+        output.connect(wires.getFirst());
+        input.connect(wires.getLast());
+
+        for (WireWidget wire : wires) {
+            editor.rootWidgets.add(wire);
+            wire.update(editor.space.code);
+        }
+        wires.getFirst().cleanup(editor);
+    }
+
+    private static void resolveOverlap(CodeEditor editor, NodeWidget node) {
+        Vec pos = node.getPos();
+        Vec size = node.getSize();
+        Set<NodeWidget> relevant = new HashSet<>();
+        for (Widget w : editor.rootWidgets) {
+            if (!(w instanceof NodeWidget other)) continue;
+            if (other == node) continue;
+            Vec otherPos = other.getPos();
+            Vec otherSize = other.getSize();
+
+            if (otherPos.y() - otherSize.y() > pos.y()) continue;
+            if (otherPos.x() < pos.x() - size.x() || pos.x() < otherPos.x() - otherSize.x()) continue;
+
+            relevant.add(other);
+        }
+
+        for (int i = 0; i < 16; i++) {
+            boolean neededAdjustment = false;
+            for (NodeWidget other : relevant) {
+                Vec otherPos = other.getPos();
+                Vec otherSize = other.getSize();
+
+                if (otherPos.y() - otherSize.y() > pos.y()) continue;
+                if (pos.y() - size.y() > otherPos.y()) continue;
+
+                neededAdjustment = true;
+                pos = pos.withY(otherPos.y() - size.y() - 0.25);
+            }
+            if (!neededAdjustment) break;
+        }
+
+        node.setPos(pos);
+    }
+
+    private static boolean isCompatible(Node.Input<?> in, Node.Output<?> out) {
+        return out.type == null || in.type == null || out.type == in.type || in.type.canConvert(out.type);
+    }
+
     @Override
     public void setPos(Vec pos) {
-        root.setPos(pos);
+        root.setPos(pos.withZ(15.99));
     }
 
     @Override
@@ -204,5 +326,10 @@ public class NodeMenuWidget implements Widget {
     @Override
     public List<Widget> getChildren() {
         return List.of(root);
+    }
+
+    @Override
+    public int interactionPriority() {
+        return 1;
     }
 }

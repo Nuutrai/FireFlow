@@ -34,7 +34,7 @@ public class LineElement {
                 -Math.sin(angle) * dist * 0.1 - Math.cos(angle) * 0.135,
                 0
         );
-        display.setInstance(inst, v.withZ(15.999).asPosition().withView(180f, 0f));
+        display.setInstance(inst, v.withZ(from.z()).asPosition().withView(180f, 0f));
     }
 
     public void remove() {

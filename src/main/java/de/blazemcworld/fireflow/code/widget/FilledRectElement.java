@@ -29,7 +29,7 @@ public class FilledRectElement {
         Vec adjustedPos = new Vec(
             pos.x() - size.x() / 2.5,
             pos.y() - size.y(),
-            15.9995
+            pos.z() + 0.0005
         );
         display.setInstance(inst, adjustedPos.asPosition().withView(180f, 0f));
     }

@@ -140,8 +140,13 @@ public class CodeEditor {
             return;
         }
 
+        List<Widget> hovered = new ArrayList<>();
         for (Widget w : new HashSet<>(rootWidgets)) {
-            if (w.inBounds(i.pos())) {
+            if (w.inBounds(i.pos())) hovered.add(w);
+        }
+        if (!hovered.isEmpty()) {
+            hovered.sort(Comparator.comparing(w -> -w.interactionPriority()));
+            for (Widget w : hovered) {
                 if (isLocked(w) != null && !isLockedByPlayer(w, player)) {
                     player.sendMessage(Component.text(Translations.get("error.locked", isLocked(w).getUsername())).color(NamedTextColor.RED));
                     return;
@@ -177,7 +182,7 @@ public class CodeEditor {
             rootWidgets.add(n);
         } else {
             Node node = FuzzySearch.extractOne(query, NodeList.root.collectNodes(), n -> n.getTitle().toLowerCase()).getReferent();
-            NodeMenuWidget.createNode(this, pos, node, new ArrayList<>());
+            NodeMenuWidget.createNode(this, pos, node, new ArrayList<>(), null);
         }
     }
 

@@ -90,8 +90,8 @@ public class WireWidget implements Widget {
 
     @Override
     public void setPos(Vec pos) {
-        if (Math.abs(pos.x() - line.from.x()) >= Math.abs(pos.y() - line.from.y())) pos = new Vec(pos.x(), line.from.y(), 0);
-        else pos = new Vec(line.from.x(), pos.y(), 0);
+        if (Math.abs(pos.x() - line.from.x()) >= Math.abs(pos.y() - line.from.y())) pos = new Vec(pos.x(), line.from.y(), 15.999);
+        else pos = new Vec(line.from.x(), pos.y(), 15.999);
         line.to = pos;
     }
 
@@ -121,6 +121,7 @@ public class WireWidget implements Widget {
         }
         boolean horizontal = line.from.x() != line.to.x();
         int arrowCount = Math.max((int) Math.ceil(lineLength / 3), 1);
+        if (arrowCount > 10) arrowCount = 10;
 
         for (int i = 0; i < arrowCount; i++) {
             if (arrows.size() <= i) {

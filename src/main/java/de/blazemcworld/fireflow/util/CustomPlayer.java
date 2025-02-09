@@ -32,7 +32,7 @@ public class CustomPlayer extends Player {
     protected void refreshCurrentChunk(Chunk currentChunk) {
         this.currentChunk = currentChunk;
         synchronized (this) {
-            if (space == null || space.play != instance || space.code != instance || space.build != instance) {
+            if (space == null || (space.play != instance && space.code != instance && space.build != instance)) {
                 space = SpaceManager.getSpaceForPlayer(this);
             }
         }

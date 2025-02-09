@@ -55,7 +55,7 @@ public class ItemWidget implements Widget {
 
     @Override
     public void update(InstanceContainer inst) {
-        display.setInstance(inst, pos.asPosition().withZ(15.995));
+        display.setInstance(inst, pos.asPosition().withZ(pos.z() - 0.005));
     }
 
     @Override

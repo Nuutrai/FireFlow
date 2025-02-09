@@ -76,6 +76,7 @@ public abstract class WireType<T> {
 
     public boolean canConvert(WireType<?> other) {
         if (other == AnyType.INSTANCE) return true;
+        if (other == SignalType.INSTANCE) return false;
         return canConvertInternal(other);
     }
 

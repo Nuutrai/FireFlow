@@ -4,6 +4,7 @@ import de.blazemcworld.fireflow.code.CodeEditor;
 import de.blazemcworld.fireflow.code.Interaction;
 import de.blazemcworld.fireflow.code.action.WireAction;
 import de.blazemcworld.fireflow.code.node.Node;
+import de.blazemcworld.fireflow.code.node.NodeList;
 import de.blazemcworld.fireflow.code.type.SignalType;
 import de.blazemcworld.fireflow.code.type.WireType;
 import net.kyori.adventure.text.Component;
@@ -99,6 +100,18 @@ public class NodeIOWidget implements Widget {
         if (i.type() == Interaction.Type.LEFT_CLICK && isInput && input.inset != null) {
             insetValue(null, i.editor());
             parent.update(i.editor().space.code);
+            return true;
+        }
+        if (i.type() == Interaction.Type.SWAP_HANDS) {
+            NodeMenuWidget menu = new NodeMenuWidget(NodeList.root.filtered(n -> NodeMenuWidget.getCompatible(n, this) != null), i.editor(), null);
+            menu.ioOrigin = this;
+            if (isInput) {
+                menu.setPos(getPos().add(0.5 + menu.getSize().x(), 0.5, 0));
+            } else {
+                menu.setPos(getPos().sub(getSize().x() + 0.5, -0.5, 0));
+            }
+            menu.update(i.editor().space.code);
+            i.editor().rootWidgets.add(menu);
             return true;
         }
         return false;

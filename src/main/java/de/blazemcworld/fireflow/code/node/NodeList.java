@@ -20,7 +20,6 @@ import de.blazemcworld.fireflow.code.node.impl.string.CombineStringsNode;
 import de.blazemcworld.fireflow.code.node.impl.string.StringLengthNode;
 import de.blazemcworld.fireflow.code.node.impl.text.CombineTextsNode;
 import de.blazemcworld.fireflow.code.node.impl.text.FormatToTextNode;
-import de.blazemcworld.fireflow.code.node.impl.text.StringToTextNode;
 import de.blazemcworld.fireflow.code.node.impl.variable.*;
 import de.blazemcworld.fireflow.code.node.impl.vector.*;
 import de.blazemcworld.fireflow.code.node.impl.world.SetBlockNode;
@@ -107,14 +106,18 @@ public class NodeList {
                     .add(new GetBlockNode())
                     .add(new GetExperienceLevelNode())
                     .add(new GetExperiencePercentageNode())
+                    .add(new GetHeldSlotNode())
                     .add(new GetPlayerFoodNode())
                     .add(new GetPlayerHealthNode())
+                    .add(new GetPlayerNameNode())
                     .add(new GetPlayerSaturationNode())
-                    .add(new GetHeldSlotNode())
+                    .add(new GetPlayerUUIDNode())
                     .add(new IsPlayerInvulnerableNode())
                     .add(new IsPlayerSneakingNode())
                     .add(new IsPlayingNode())
                     .add(new PlayerCanFlyNode())
+                    .add(new PlayerFromNameNode())
+                    .add(new PlayerFromUUIDNode())
                     .add(new PlayerIsFlyingNode())
                     .add(new PlayerListNode())
                     .add(new PlayerMainItemNode())
@@ -140,8 +143,6 @@ public class NodeList {
                     .add(new LessEqualNode())
                     .add(new LessThanNode())
                     .add(new MultiplyNumbersNode())
-                    .add(new NumberToStringNode())
-                    .add(new NumberToTextNode())
                     .add(new ParseNumberNode())
                     .add(new RandomNumberNode())
                     .add(new RoundNumberNode())
@@ -171,7 +172,6 @@ public class NodeList {
             .add(new Category("text", Material.WRITABLE_BOOK)
                     .add(new CombineTextsNode())
                     .add(new FormatToTextNode())
-                    .add(new StringToTextNode())
             )
             .add(new Category("variable", Material.ENDER_CHEST)
                     .add(new CacheValueNode<>(null))

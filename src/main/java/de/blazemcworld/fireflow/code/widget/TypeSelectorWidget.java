@@ -34,7 +34,7 @@ public class TypeSelectorWidget implements Widget {
             };
             container.inner.widgets.add(button);
         }
-        container.backgroundColor(0x99000011);
+        container.backgroundColor(0xdd000011);
     }
 
     private static void selectSubtypes(WireType<?> type, Vec pos, CodeEditor editor, List<WireType<?>> done, Consumer<WireType<?>> callback) {
@@ -61,7 +61,7 @@ public class TypeSelectorWidget implements Widget {
 
     @Override
     public void setPos(Vec pos) {
-        container.setPos(pos);
+        container.setPos(pos.withZ(15.99));
     }
 
     @Override
@@ -100,4 +100,8 @@ public class TypeSelectorWidget implements Widget {
         return container.getChildren();
     }
 
+    @Override
+    public int interactionPriority() {
+        return 1;
+    }
 }

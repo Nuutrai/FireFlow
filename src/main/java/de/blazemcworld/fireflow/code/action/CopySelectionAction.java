@@ -25,7 +25,7 @@ public class CopySelectionAction implements Action {
                 if (n.node instanceof FunctionOutputsNode) return false;
                 return true;
             }
-            return false;
+            return widget instanceof WireWidget;
         }).toList());
 
         HashMap<NodeWidget, NodeWidget> oldToNewNodes = new HashMap<>();

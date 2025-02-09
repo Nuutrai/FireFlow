@@ -28,7 +28,7 @@ public class OnPlayerJoinNode extends Node {
             CodeThread thread = evaluator.newCodeThread(event);
             thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
             thread.sendSignal(signal);
-            thread.clearQueue();
+            evaluator.scheduler.scheduleNextProcess(thread::clearQueue);
         });
     }
 

@@ -85,12 +85,12 @@ public class WireAction implements Action {
         for (Vec position : positions) {
             WireWidget lastWire = wires.get(index);
             if (index == wires.size() - 1) {
-                WireWidget wire = new WireWidget(lastWire, type, position);
+                WireWidget wire = new WireWidget(lastWire, type, position.withZ(15.999));
                 wire.update(editor.space.code);
                 wires.add(wire);
             } else {
                 wires.get(index + 1).line.from = lastWire.line.to;
-                wires.get(index + 1).line.to = position;
+                wires.get(index + 1).line.to = position.withZ(15.999);
                 wires.get(index + 1).update(editor.space.code);
             }
             index++;
