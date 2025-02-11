@@ -19,14 +19,14 @@ public class OnPlayerStopSneakingNode extends Node {
 
         signal = new Output<>("signal", SignalType.INSTANCE);
         player = new Output<>("player", PlayerType.INSTANCE);
-        player.valueFromThread();
+        player.valueFromScope();
     }
 
     @Override
     public void init(CodeEvaluator evaluator) {
         evaluator.events.addListener(PlayerStopSneakingEvent.class, event -> {
             CodeThread thread = evaluator.newCodeThread(event);
-            thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
+            thread.setScopeValue(player, new PlayerValue(event.getPlayer()));
             thread.sendSignal(signal);
             thread.clearQueue();
         });

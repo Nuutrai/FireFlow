@@ -37,9 +37,9 @@ public class ListValue<T> {
         return new ListValue<>(type, newStore);
     }
 
-    public ListValue<T> add(T value) {
+    public ListValue<T> add(List<T> value) {
         List<T> newStore = new ArrayList<>(store);
-        newStore.add(value);
+        newStore.addAll(value);
         return new ListValue<>(type, newStore);
     }
 
@@ -50,11 +50,11 @@ public class ListValue<T> {
         return new ListValue<>(type, newStore);
     }
 
-    public ListValue<T> insert(int index, T value) {
+    public ListValue<T> insert(int index, List<T> value) {
         if (index < 0) index = 0;
         if (index > store.size()) index = store.size();
         List<T> newStore = new ArrayList<>(store);
-        newStore.add(index, value);
+        newStore.addAll(index, value);
         return new ListValue<>(type, newStore);
     }
 

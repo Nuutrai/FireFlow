@@ -23,8 +23,8 @@ public class OnPlayerAttackPlayerNode extends Node {
         source = new Output<>("source", PlayerType.INSTANCE);
         target = new Output<>("target", PlayerType.INSTANCE);
 
-        source.valueFromThread();
-        target.valueFromThread();
+        source.valueFromScope();
+        target.valueFromScope();
     }
 
     @Override
@@ -34,8 +34,8 @@ public class OnPlayerAttackPlayerNode extends Node {
             if (!(event.getTarget() instanceof Player t)) return;
 
             CodeThread thread = evaluator.newCodeThread(event);
-            thread.setThreadValue(source, new PlayerValue(s));
-            thread.setThreadValue(target, new PlayerValue(t));
+            thread.setScopeValue(source, new PlayerValue(s));
+            thread.setScopeValue(target, new PlayerValue(t));
             thread.sendSignal(signal);
             thread.clearQueue();
         });

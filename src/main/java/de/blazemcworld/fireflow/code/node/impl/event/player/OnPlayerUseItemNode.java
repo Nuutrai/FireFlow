@@ -24,16 +24,16 @@ public class OnPlayerUseItemNode extends Node {
         player = new Output<>("player", PlayerType.INSTANCE);
         item = new Output<>("item", ItemType.INSTANCE);
 
-        player.valueFromThread();
-        item.valueFromThread();
+        player.valueFromScope();
+        item.valueFromScope();
     }
 
     @Override
     public void init(CodeEvaluator evaluator) {
         evaluator.events.addListener(PlayerUseItemEvent.class, event -> {
             CodeThread thread = evaluator.newCodeThread(event);
-            thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
-            thread.setThreadValue(item, event.getItemStack());
+            thread.setScopeValue(player, new PlayerValue(event.getPlayer()));
+            thread.setScopeValue(item, event.getItemStack());
             thread.sendSignal(signal);
             thread.clearQueue();
         });

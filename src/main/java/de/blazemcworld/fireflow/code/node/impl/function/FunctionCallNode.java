@@ -1,5 +1,6 @@
 package de.blazemcworld.fireflow.code.node.impl.function;
 
+import de.blazemcworld.fireflow.code.FunctionScope;
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.SignalType;
 
@@ -16,8 +17,9 @@ public class FunctionCallNode extends Node {
             Input<?> input = new Input<>(matching.id, matching.type);
             if (input.type == SignalType.INSTANCE) {
                 input.onSignal((ctx) -> {
-                    ctx.functionStack.push(this);
-                    ctx.submit(ctx.functionStack::pop);
+                    FunctionScope prev = ctx.functionScope;
+                    ctx.functionScope = new FunctionScope(prev, this);
+                    ctx.submit(() -> ctx.functionScope = prev);
                     ctx.sendSignal((Output<Void>) matching);
                 });
             }
@@ -26,10 +28,10 @@ public class FunctionCallNode extends Node {
             Output<?> output = new Output<>(matching.id, matching.type);
             if (output.type != SignalType.INSTANCE) {
                 ((Node.Output<Object>) output).valueFrom((ctx) -> {
-                    ctx.functionStack.push(this);
+                    FunctionScope prev = ctx.functionScope;
+                    ctx.functionScope = new FunctionScope(prev, this);
                     Object out = matching.getValue(ctx);
-                    ctx.clearQueue();
-                    ctx.functionStack.pop();
+                    ctx.functionScope = prev;
                     return out;
                 });
             }

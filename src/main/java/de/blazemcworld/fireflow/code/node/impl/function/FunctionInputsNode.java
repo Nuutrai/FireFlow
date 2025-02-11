@@ -1,5 +1,6 @@
 package de.blazemcworld.fireflow.code.node.impl.function;
 
+import de.blazemcworld.fireflow.code.FunctionScope;
 import de.blazemcworld.fireflow.code.node.Node;
 import de.blazemcworld.fireflow.code.type.SignalType;
 import de.blazemcworld.fireflow.code.type.WireType;
@@ -18,10 +19,13 @@ public class FunctionInputsNode extends Node {
         Output<?> input = new Output<>(name, type);
         if (type != SignalType.INSTANCE) {
             ((Node.Output<Object>) input).valueFrom((ctx) -> {
-                if (ctx.functionStack.isEmpty()) return type.defaultValue();
-                FunctionCallNode call = ctx.functionStack.peek();
-                if (call.function != function) return type.defaultValue();
-                return call.getInput(name).getValue(ctx);
+                if (ctx.functionScope == null) return type.defaultValue();
+                FunctionScope s = ctx.functionScope;
+                if (s.call.function != function) return type.defaultValue();
+                ctx.functionScope = s.parent;
+                Object out = s.call.getInput(name).getValue(ctx);
+                ctx.functionScope = s;
+                return out;
             });
         }
     }

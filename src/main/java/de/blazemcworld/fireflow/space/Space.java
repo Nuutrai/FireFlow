@@ -14,6 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.BlockVec;
+import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
@@ -139,6 +140,7 @@ public class Space {
         } else {
             save();
         }
+        for (Entity e : play.getEntities()) e.remove();
         evaluator = new CodeEvaluator(this);
     }
 

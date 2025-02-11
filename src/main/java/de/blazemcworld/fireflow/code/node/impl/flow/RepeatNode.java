@@ -15,7 +15,7 @@ public class RepeatNode extends Node {
         Output<Void> repeat = new Output<>("repeat", SignalType.INSTANCE);
         Output<Double> index = new Output<>("index", NumberType.INSTANCE);
         Output<Void> next = new Output<>("next", SignalType.INSTANCE);
-        index.valueFromThread();
+        index.valueFromScope();
 
         signal.onSignal((ctx) -> {
             int max = times.getValue(ctx).intValue();
@@ -27,7 +27,7 @@ public class RepeatNode extends Node {
                     ctx.sendSignal(next);
                     return;
                 }
-                ctx.setThreadValue(index, i[0]++);
+                ctx.setScopeValue(index, i[0]++);
                 ctx.submit(step[0]);
                 ctx.sendSignal(repeat);
             };

@@ -23,10 +23,10 @@ public class ScheduleNode extends Node {
         signal.onSignal((ctx) -> {
             AtomicInteger remaining = new AtomicInteger(delay.getValue(ctx).intValue());
 
+            CodeThread spawned = ctx.subThread();
             ctx.evaluator.scheduler.submitTask(() -> {
                 if (ctx.evaluator.isStopped()) return TaskSchedule.stop();
                 if (remaining.getAndDecrement() <= 0) {
-                    CodeThread spawned = ctx.subThread();
                     spawned.sendSignal(task);
                     spawned.clearQueue();
                     return TaskSchedule.stop();

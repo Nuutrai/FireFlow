@@ -1,21 +1,15 @@
 package de.blazemcworld.fireflow.code.node.impl.condition;
 
 import de.blazemcworld.fireflow.code.node.Node;
-import de.blazemcworld.fireflow.code.type.AllTypes;
+import de.blazemcworld.fireflow.code.node.SingleGenericNode;
 import de.blazemcworld.fireflow.code.type.ConditionType;
 import de.blazemcworld.fireflow.code.type.WireType;
-import de.blazemcworld.fireflow.util.Translations;
 import net.minestom.server.item.Material;
 
-import java.util.List;
-
-public class ConditionalChoiceNode<T> extends Node {
-
-    private final WireType<T> type;
+public class ConditionalChoiceNode<T> extends SingleGenericNode<T> {
 
     public ConditionalChoiceNode(WireType<T> type) {
-        super("conditional_choice", Material.WATER_BUCKET);
-        this.type = type;
+        super("conditional_choice", Material.WATER_BUCKET, type);
 
         Input<Boolean> condition = new Input<>("condition", ConditionType.INSTANCE);
         Input<T> trueValue = new Input<>("trueValue", type);
@@ -34,29 +28,7 @@ public class ConditionalChoiceNode<T> extends Node {
     }
 
     @Override
-    public boolean acceptsType(WireType<?> type, int index) {
-        return AllTypes.isValue(type);
+    public Node copyWithType(WireType<?> type) {
+        return new ConditionalChoiceNode<>(type);
     }
-
-    @Override
-    public List<WireType<?>> getTypes() {
-        return List.of(type);
-    }
-
-    @Override
-    public String getTitle() {
-        if (type == null) return Translations.get("node.conditional_choice.base_title");
-        return Translations.get("node.conditional_choice.title", type.getName());
-    }
-
-    @Override
-    public int getTypeCount() {
-        return 1;
-    }
-
-    @Override
-    public Node copyWithTypes(List<WireType<?>> types) {
-        return new ConditionalChoiceNode<>(types.getFirst());
-    }
-
 }

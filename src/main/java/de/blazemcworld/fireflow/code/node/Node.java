@@ -214,8 +214,8 @@ public abstract class Node {
             return Node.this;
         }
 
-        public void valueFromThread() {
-            logic = (ctx) -> ctx.getThreadValue(this);
+        public void valueFromScope() {
+            logic = (ctx) -> ctx.getScopeValue(this);
         }
     }
 

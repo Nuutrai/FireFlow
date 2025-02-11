@@ -22,8 +22,8 @@ public class OnPlayerChatNode extends Node {
         signal = new Output<>("signal", SignalType.INSTANCE);
         player = new Output<>("player", PlayerType.INSTANCE);
         message = new Output<>("message", StringType.INSTANCE);
-        player.valueFromThread();
-        message.valueFromThread();
+        player.valueFromScope();
+        message.valueFromScope();
 
     }
 
@@ -31,8 +31,8 @@ public class OnPlayerChatNode extends Node {
     public void init(CodeEvaluator evaluator) {
         evaluator.events.addListener(PlayerChatEvent.class, event -> {
             CodeThread thread = evaluator.newCodeThread(event);
-            thread.setThreadValue(player, new PlayerValue(event.getPlayer()));
-            thread.setThreadValue(message, event.getRawMessage());
+            thread.setScopeValue(player, new PlayerValue(event.getPlayer()));
+            thread.setScopeValue(message, event.getRawMessage());
             thread.sendSignal(signal);
             thread.clearQueue();
         });

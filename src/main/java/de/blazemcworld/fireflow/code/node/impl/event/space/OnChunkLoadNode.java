@@ -21,8 +21,8 @@ public class OnChunkLoadNode extends Node {
         signal = new Output<>("signal", SignalType.INSTANCE);
         x = new Output<>("x", NumberType.INSTANCE);
         z = new Output<>("z", NumberType.INSTANCE);
-        x.valueFromThread();
-        z.valueFromThread();
+        x.valueFromScope();
+        z.valueFromScope();
     }
 
     @Override
@@ -30,8 +30,8 @@ public class OnChunkLoadNode extends Node {
         evaluator.events.addListener(InstanceChunkLoadEvent.class, event -> {
             if (SpaceInstance.chunkNotInBounds(event.getChunkX(), event.getChunkZ())) return;
             CodeThread thread = evaluator.newCodeThread(event);
-            thread.setThreadValue(x, event.getChunkX() * 16.0);
-            thread.setThreadValue(z, event.getChunkZ() * 16.0);
+            thread.setScopeValue(x, event.getChunkX() * 16.0);
+            thread.setScopeValue(z, event.getChunkZ() * 16.0);
             thread.sendSignal(signal);
             thread.clearQueue();
         });
