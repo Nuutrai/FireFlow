@@ -189,8 +189,13 @@ public class NodeList {
         FireFlow.LOGGER.info("Loaded " + root.collectNodes().size() + " node types");
     }
 
+    public static Category getRoot() {
+        return root;
+    }
+
     public static class Category {
         public final String name;
+        public final String rawName;
         public final Material icon;
 
         public final List<Category> categories = new ArrayList<>();
@@ -200,11 +205,13 @@ public class NodeList {
 
         public Category(String id, Material icon) {
             name = Translations.get("category." + id);
+            rawName = id;
             this.icon = icon;
         }
 
         public Category(Category copy) {
             name = copy.name;
+            rawName = copy.rawName;
             icon = copy.icon;
             isFunctions = copy.isFunctions;
         }
@@ -258,5 +265,23 @@ public class NodeList {
             }
             return filtered;
         }
+
+        public Category getCategory(String id) {
+            if (id.equals("root") || id.equals("main")) {
+                return getRoot();
+            }
+
+            for (Category category: categories) {
+                if (category.rawName.equals(id)) {
+                    return category;
+                }
+            }
+
+            System.out.println("'" + this.rawName + "' has no child category named '" + id + "'");
+
+            return null;
+
+        }
+
     }
 }

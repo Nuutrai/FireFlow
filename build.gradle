@@ -23,6 +23,12 @@ dependencies {
 
     // fuzzy matching
     implementation 'me.xdrop:fuzzywuzzy:1.4.0'
+
+    // google commons
+    implementation 'com.google.guava:guava:33.3.1-jre'
+
+    // yaml
+    implementation 'org.yaml:snakeyaml:2.2'
 }
 
 jar {

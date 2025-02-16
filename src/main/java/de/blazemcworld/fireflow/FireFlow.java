@@ -3,6 +3,7 @@ package de.blazemcworld.fireflow;
 import de.blazemcworld.fireflow.code.node.NodeList;
 import de.blazemcworld.fireflow.code.type.AllTypes;
 import de.blazemcworld.fireflow.command.*;
+import de.blazemcworld.fireflow.plugin.PluginLoader;
 import de.blazemcworld.fireflow.space.Lobby;
 import de.blazemcworld.fireflow.space.SpaceManager;
 import de.blazemcworld.fireflow.util.*;
@@ -33,10 +34,13 @@ public class FireFlow {
     public static final Logger LOGGER = LogManager.getLogger("FireFlow");
     public static final ExecutorService POOL = Executors.newCachedThreadPool();
     private static final Component motd = MiniMessage.miniMessage().deserialize(Config.store.motd());
+    public static final PluginLoader pluginLoader = new PluginLoader();
+    private static MinecraftServer server;
 
     public static void main(String[] args) {
         LOGGER.info("Starting...");
         MinecraftServer server = MinecraftServer.init();
+        FireFlow.server = server;
 
         MinecraftServer.setBrandName("FireFlow");
         MojangAuth.init();
@@ -48,6 +52,8 @@ public class FireFlow {
         Lobby.init();
         SpaceManager.init();
         TextWidth.init();
+
+        pluginLoader.init();
 
         MinecraftServer.getCommandManager().register(
                 new CodeCommand(),
@@ -94,6 +100,10 @@ public class FireFlow {
         });
 
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> {
+
+            // This doesn't really work at the moment, sooo
+            pluginLoader.disablePlugins();
+
             try {
                 POOL.shutdown();
                 boolean timeout = POOL.awaitTermination(10, TimeUnit.SECONDS);
@@ -107,6 +117,10 @@ public class FireFlow {
 
         server.start("0.0.0.0", Config.store.port());
         LOGGER.info("Ready!");
+    }
+
+    public static MinecraftServer getServer() {
+        return server;
     }
 
 }
